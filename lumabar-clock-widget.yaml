@@ -1,0 +1,83 @@
+# =====================================================================
+#  Tuile "horloge / widget" facon lumabar
+#  Pour le mod Windhawk "Taskbar Clock Customization"
+#
+#  Installation : Windhawk > Taskbar Clock Customization > Settings
+#                 > "Textual mode" > coller ce fichier > Save settings
+#
+#  Ligne du haut : l'heure. Ligne du bas : jour + date, puis le titre en
+#  lecture (Spotify, YouTube, VLC...) quand un media joue.
+#  Variantes (remplacer BottomLine) :
+#    stats systeme : '%weekday% %date%  ·  CPU %cpu%  RAM %ram%'
+#    meteo         : '%weekday% %date%  ·  %weather%'  (renseigner WebContentWeatherLocation)
+# =====================================================================
+ShowSeconds: false
+TimeFormat: HH':'mm
+DateFormat: d MMM
+DateLocale: ""
+WeekdayFormat: dddd
+WeekdayFormatCustom: Dim, Lun, Mar, Mer, Jeu, Ven, Sam
+TopLine: '%time%'
+BottomLine: '%weekday% %date%%media_info%'
+MiddleLine: '%weekday%'
+TooltipLine: '📅 %weekday% %date%%n%🕒 %time%%n%%n%💻 CPU %cpu%  ·  RAM %ram% (%ram_used% / %ram_total% Go)%n%🌐 ↓ %download_speed%  ↑ %upload_speed%%n%🔋 %battery%'
+TooltipLineMode: replace
+Width: 180
+Height: 60
+MaxWidth: 0
+TextSpacing: 0
+DataCollection:
+  NetworkMetricsFormat: mbsDynamic
+  NetworkMetricsFixedDecimals: -1
+  DiskMetricsFormat: mbsDynamic
+  DiskMetricsFixedDecimals: -1
+  PercentageFormat: spacePaddingAndSymbol
+  UpdateInterval: 2
+  NetworkAdapterName: ''
+  GpuAdapterName: ''
+MediaPlayer:
+  IgnoredPlayers:
+    - ''
+  MaxLength: 30
+  MediaInfoFormat: '  ·  %media_status% %media_title%'
+  NoMediaText: ''
+  RemoveBrackets: true
+WebContentWeatherLocation: ''
+WebContentWeatherFormat: '%c %t'
+WebContentWeatherUnits: autoDetect
+WebContentsItems:
+  - Url: ''
+    BlockStart: ''
+    Start: ''
+    End: ''
+    ContentMode: xmlHtml
+    SearchReplace:
+      - Search: ''
+        Replace: ''
+    MaxLength: 28
+WebContentsUpdateInterval: 10
+TimeZones:
+  - ''
+TimeStyle:
+  Hidden: false
+  TextColor: ''
+  TextAlignment: ''
+  FontSize: 0
+  FontFamily: ''
+  FontWeight: ''
+  FontStyle: ''
+  FontStretch: ''
+  CharacterSpacing: 0
+  LineHeight: 0
+DateStyle:
+  Hidden: false
+  TextColor: ''
+  TextAlignment: ''
+  FontSize: 0
+  FontFamily: ''
+  FontWeight: ''
+  FontStyle: ''
+  FontStretch: ''
+  CharacterSpacing: 0
+  LineHeight: 0
+oldTaskbarOnWin11: false

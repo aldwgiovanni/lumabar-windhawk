@@ -1,0 +1,296 @@
+# =====================================================================
+#  LUMABAR-STYLE DOCK  -  theme pour le mod Windhawk "Windows 11 Taskbar Styler"
+#
+#  Installation : Windhawk > Windows 11 Taskbar Styler > onglet Settings
+#                 > "Textual mode" > coller TOUT ce fichier > Save settings
+#
+#  Rendu : barre des taches transformee en dock flottant en verre, avec
+#  chaque groupe (Demarrer, widgets, applis, zone systeme, horloge) dans
+#  une "tuile" arrondie, point bleu sous les applis ouvertes, menus et
+#  volets dans la meme matiere. Voir README.md pour les variantes.
+# =====================================================================
+theme: ""
+
+styleConstants:
+  # ----- Geometrie (px) -----
+  # Hauteur totale de la zone barre des taches (dock + espace sous le dock)
+  - DockHeight=58
+  # Espace entre le dock et les bords de l'ecran
+  - DockGapBottom=8
+  - DockGapTop=0
+  - DockGapSide=8
+  # Arrondis du dock et des tuiles
+  - DockRadius=18
+  - TileRadius=11
+  # Marge verticale des tuiles dans le dock / espace horizontal entre tuiles
+  - TileInset=5
+  - TileGap=3
+  # Position du point "appli ouverte" (distance depuis le bas du bouton)
+  - DotOffset=7
+  # ----- Matieres et couleurs (variante "Glass" par defaut) -----
+  - DockBackground=<WindhawkBlur BlurAmount="22" TintColor="{ThemeResource LumaDockTint}" TintOpacity="0.5" FallbackColor="{ThemeResource LumaDockFallback}"/>
+  - DockBorder=<SolidColorBrush Color="{ThemeResource LumaStroke}" Opacity="0.22"/>
+  - TileBackground=<SolidColorBrush Color="{ThemeResource LumaTile}" Opacity="0.10"/>
+  - TileBorder=<SolidColorBrush Color="{ThemeResource LumaStroke}" Opacity="0.14"/>
+  - AppTileBackground=<SolidColorBrush Color="{ThemeResource LumaTile}" Opacity="0.06"/>
+  - AppTileBorder=<SolidColorBrush Color="{ThemeResource LumaStroke}" Opacity="0.10"/>
+  - HoverBackground=<SolidColorBrush Color="{ThemeResource LumaTile}" Opacity="0.20"/>
+  - PressedBackground=<SolidColorBrush Color="{ThemeResource LumaTile}" Opacity="0.08"/>
+  - ActiveBackground=<SolidColorBrush Color="{ThemeResource LumaTile}" Opacity="0.15"/>
+  - Accent=#0A84FF
+  - FlyoutBackground=<WindhawkBlur BlurAmount="30" TintColor="{ThemeResource LumaDockTint}" TintOpacity="0.72" FallbackColor="{ThemeResource LumaDockFallback}"/>
+  - FlyoutRadius=16
+
+themeResourceVariables:
+  # Couleurs qui suivent le mode sombre / clair de Windows
+  - LumaDockTint@Dark=#0B0B0F
+  - LumaDockTint@Light=#F2F2F6
+  - LumaDockFallback@Dark=#15151A
+  - LumaDockFallback@Light=#E9E9EE
+  - LumaTile@Dark=#FFFFFF
+  - LumaTile@Light=#000000
+  - LumaStroke@Dark=#FFFFFF
+  - LumaStroke@Light=#000000
+
+controlStyles:
+  # ===================== 1. Barre : hauteur et dock flottant =====================
+  - target: Taskbar.TaskbarFrame
+    styles:
+      - Height=$DockHeight
+  - target: Taskbar.TaskbarFrame > Grid#RootGrid
+    styles:
+      - Margin=0,$DockGapTop,0,$DockGapBottom
+      - Padding=12,0,12,0
+  - target: Taskbar.TaskbarFrame > Grid#RootGrid > Taskbar.TaskbarBackground
+    styles:
+      - Margin=-12,0,-12,0
+  - target: Taskbar.TaskbarFrame > Grid#RootGrid > Taskbar.TaskbarBackground > Grid > Rectangle#BackgroundFill
+    styles:
+      - Fill:=$DockBackground
+      - Margin=$DockGapSide,0,$DockGapSide,0
+      - RadiusX=$DockRadius
+      - RadiusY=$DockRadius
+      - Stroke:=$DockBorder
+      - StrokeThickness=1
+  - target: Rectangle#BackgroundStroke
+    styles:
+      - Visibility=Collapsed
+
+  # ============ 2. Tuiles : Demarrer, Vue des taches, Widgets, debordement ============
+  - target: Taskbar.TaskListButtonPanel#ExperienceToggleButtonRootPanel, Taskbar.TaskListButtonPanel#OverflowToggleButtonRootPanel
+    styles:
+      - Background:=$TileBackground
+      - BorderBrush:=$TileBorder
+      - BorderThickness=1
+      - CornerRadius=$TileRadius
+      - Margin=$TileGap,$TileInset,$TileGap,$TileInset
+  - target: Taskbar.TaskListButtonPanel#ExperienceToggleButtonRootPanel@CommonStates > Grid > Border#BackgroundElement, Taskbar.TaskListButtonPanel#ExperienceToggleButtonRootPanel@CommonStates > Border#BackgroundElement, Taskbar.TaskListButtonPanel#OverflowToggleButtonRootPanel@CommonStates > Grid > Border#BackgroundElement, Taskbar.TaskListButtonPanel#OverflowToggleButtonRootPanel@CommonStates > Border#BackgroundElement
+    styles:
+      - CornerRadius=$TileRadius
+      - Margin=0
+      - BorderThickness=0
+      - Background@ActiveNormal:=$ActiveBackground
+      - Background@InactivePointerOver:=$HoverBackground
+      - Background@ActivePointerOver:=$HoverBackground
+      - Background@InactivePressed:=$PressedBackground
+      - Background@ActivePressed:=$PressedBackground
+  # Bouton Widgets (meteo) : tuile un peu plus large, contenu centre
+  - target: Taskbar.AugmentedEntryPointButton#AugmentedEntryPointButton > Taskbar.TaskListButtonPanel#ExperienceToggleButtonRootPanel
+    styles:
+      - Padding=6,0,6,0
+      - MinWidth=64
+  - target: Grid#AugmentedEntryPointContentGrid
+    styles:
+      - Margin=0
+      - HorizontalAlignment=Center
+  # Bouton Demarrer : retirez les "//" pour le masquer (facon lumabar : touche Windows)
+  - target: Taskbar.ExperienceToggleButton#LaunchListButton[AutomationProperties.AutomationId=StartButton]
+    styles:
+      - //Visibility=Collapsed
+
+  # ===================== 3. Recherche (si elle est affichee) =====================
+  - target: SearchUx.SearchUI.SearchButtonRootGrid#SearchBoxButtonRootPanel
+    styles:
+      - Background:=$TileBackground
+      - BorderBrush:=$TileBorder
+      - BorderThickness=1
+      - CornerRadius=$TileRadius
+      - Margin=$TileGap,$TileInset,$TileGap,$TileInset
+  - target: SearchUx.SearchUI.SearchButtonRootGrid#SearchBoxButtonRootPanel@CommonStates > Grid > Border#BackgroundElement, SearchUx.SearchUI.SearchButtonRootGrid#SearchBoxButtonRootPanel@CommonStates > Border#BackgroundElement
+    styles:
+      - CornerRadius=$TileRadius
+      - Margin=0
+      - BorderThickness=0
+      - Background@InactivePointerOver:=$HoverBackground
+      - Background@ActivePointerOver:=$HoverBackground
+      - Background@InactivePressed:=$PressedBackground
+      - Background@ActivePressed:=$PressedBackground
+  - target: Border#SearchPillBackgroundElement
+    styles:
+      - Background=Transparent
+      - BorderThickness=0
+      - CornerRadius=$TileRadius
+
+  # ===================== 4. Applications epinglees / ouvertes =====================
+  - target: Grid#IconPanel@CommonStates > Border#BackgroundElement, Taskbar.TaskListLabeledButtonPanel@CommonStates > Border#BackgroundElement
+    styles:
+      - CornerRadius=$TileRadius
+      - Margin=$TileGap,$TileInset,$TileGap,$TileInset
+      - BorderThickness=1
+      - Background:=$AppTileBackground
+      - BorderBrush:=$AppTileBorder
+      - Background@InactiveNormal:=$AppTileBackground
+      - Background@ActiveNormal:=$ActiveBackground
+      - Background@InactivePointerOver:=$HoverBackground
+      - Background@ActivePointerOver:=$HoverBackground
+      - Background@InactivePressed:=$PressedBackground
+      - Background@ActivePressed:=$PressedBackground
+      - BorderBrush@InactiveNormal:=$AppTileBorder
+      - BorderBrush@ActiveNormal:=$TileBorder
+      - BorderBrush@InactivePointerOver:=$TileBorder
+      - BorderBrush@ActivePointerOver:=$TileBorder
+      - BorderBrush@InactivePressed:=$AppTileBorder
+      - BorderBrush@ActivePressed:=$AppTileBorder
+  # Icone legerement remontee pour laisser la place au point
+  - target: Grid#IconPanel > Image#Icon, Taskbar.TaskListLabeledButtonPanel#IconPanel > Image#Icon
+    styles:
+      - Margin=0,0,0,4
+  # Point bleu "appli ouverte" ; l'appli active a un point allonge
+  - target: Grid#IconPanel@RunningIndicatorStates > Rectangle#RunningIndicator, Taskbar.TaskListLabeledButtonPanel@RunningIndicatorStates > Rectangle#RunningIndicator
+    styles:
+      - Fill=$Accent
+      - Width=5
+      - Height=5
+      - RadiusX=2.5
+      - RadiusY=2.5
+      - Margin=0,0,0,$DotOffset
+      - Width@ActiveRunningIndicator=14
+      - Fill@ActiveRunningIndicator=$Accent
+      - Fill@RequestingAttentionRunningIndicator=#FF9F0A
+  # Pas d'indicateur "plusieurs fenetres" (sobre comme lumabar) ; mettez Visible pour le ravoir
+  - target: Border#MultiWindowElement
+    styles:
+      - Visibility=Collapsed
+  # Libelles (si "Combiner les boutons" est desactive)
+  - target: Grid#IconPanel > TextBlock#LabelControl, Taskbar.TaskListLabeledButtonPanel > TextBlock#LabelControl
+    styles:
+      - FontSize=12
+      - Margin=2,0,8,0
+
+  # ===================== 5. Zone systeme : chaque groupe = une tuile =====================
+  - target: StackPanel#SystemTrayFrameGrid, Grid#SystemTrayFrameGrid
+    styles:
+      - Height={{$DockHeight-$DockGapTop-$DockGapBottom}}
+      - VerticalAlignment=Top
+      - Margin=0,$DockGapTop,{{$DockGapSide+4}},0
+      - Background=Transparent
+      - Padding=0
+  # Chevron "icones masquees", icones de notification, langue, micro/localisation
+  - target: SystemTray.Stack#NotifyIconStack > Grid#Content, SystemTray.NotificationAreaIcons#NotificationAreaIcons > ItemsPresenter > StackPanel, SystemTray.Stack#MainStack > Grid#Content, SystemTray.Stack#NonActivatableStack > Grid#Content
+    styles:
+      - Background:=$TileBackground
+      - BorderBrush:=$TileBorder
+      - BorderThickness=1
+      - CornerRadius=$TileRadius
+      - Margin=$TileGap,$TileInset,$TileGap,$TileInset
+      - Padding=2,0,2,0
+  # Reseau / son / batterie
+  - target: SystemTray.OmniButton#ControlCenterButton > Grid
+    styles:
+      - Background:=$TileBackground
+      - BorderBrush:=$TileBorder
+      - BorderThickness=1
+      - CornerRadius=$TileRadius
+      - Margin=$TileGap,$TileInset,$TileGap,$TileInset
+      - Padding=4,0,4,0
+  # Horloge + notifications : la tuile "widget horloge"
+  - target: SystemTray.OmniButton#NotificationCenterButton > Grid
+    styles:
+      - Background:=$TileBackground
+      - BorderBrush:=$TileBorder
+      - BorderThickness=1
+      - CornerRadius=$TileRadius
+      - Margin=$TileGap,$TileInset,$TileGap,$TileInset
+      - Padding=4,0,4,0
+  # Survol des boutons systeme, meme arrondi que la tuile
+  - target: SystemTray.OmniButton > Grid@CommonStates > Border#BackgroundBorder
+    styles:
+      - CornerRadius=$TileRadius
+      - Margin=-4,0,-4,0
+      - Background@PointerOver:=$HoverBackground
+      - Background@Pressed:=$PressedBackground
+      - Background@Checked:=$ActiveBackground
+      - Background@CheckedPointerOver:=$HoverBackground
+      - Background@CheckedPressed:=$PressedBackground
+  - target: SystemTray.OmniButton
+    styles:
+      - Padding=0
+  # Survol des icones de la zone de notification
+  - target: SystemTray.NotifyIconView > Grid#ContainerGrid@ > Border#BackgroundBorder, SystemTray.IconView > Grid#ContainerGrid@ > Border#BackgroundBorder, SystemTray.ChevronIconView > Grid#ContainerGrid@ > Border#BackgroundBorder
+    styles:
+      - CornerRadius=8
+      - Background@PointerOver:=$HoverBackground
+      - Background@Pressed:=$PressedBackground
+  # Horloge : heure en gras, date plus discrete
+  - target: TextBlock#TimeInnerTextBlock
+    styles:
+      - FontSize=13
+      - FontWeight=SemiBold
+  - target: TextBlock#DateInnerTextBlock
+    styles:
+      - FontSize=11
+      - Opacity=0.75
+  # Bouton "Afficher le bureau" reduit
+  - target: SystemTray.Stack#ShowDesktopStack
+    styles:
+      - Width=8
+
+  # ===================== 6. Menus et volets, meme verre =====================
+  # Miniatures au survol des applis
+  - target: Taskbar.TaskbarBackground#HoverFlyoutBackgroundControl > Grid > Rectangle#BackgroundFill
+    styles:
+      - Fill:=$FlyoutBackground
+      - RadiusX=$FlyoutRadius
+      - RadiusY=$FlyoutRadius
+      - Stroke:=$DockBorder
+      - StrokeThickness=1
+  - target: Border#HoverFlyoutBackground
+    styles:
+      - Background=Transparent
+      - BorderThickness=0
+      - CornerRadius=$FlyoutRadius
+  # Menu contextuel
+  - target: MenuFlyoutPresenter
+    styles:
+      - CornerRadius=$FlyoutRadius
+  - target: MenuFlyoutPresenter > Border
+    styles:
+      - Background:=$FlyoutBackground
+      - BorderBrush:=$DockBorder
+      - BorderThickness=1
+      - CornerRadius=$FlyoutRadius
+      - Padding=4,6,4,6
+  # Infobulles
+  - target: ToolTip > ContentPresenter#LayoutRoot
+    styles:
+      - Background:=$FlyoutBackground
+      - BorderBrush:=$DockBorder
+      - BorderThickness=1
+      - CornerRadius=10
+  # Volet des icones masquees
+  - target: Border#OverflowFlyoutBackgroundBorder
+    styles:
+      - Background:=$FlyoutBackground
+      - BorderBrush:=$DockBorder
+      - BorderThickness=1
+      - CornerRadius=$FlyoutRadius
+  # Selecteur de langue
+  - target: WindowsInternal.ComposableShell.Experiences.TextInput.Common.InputSwitcher > ContentControl > ContentPresenter > Grid
+    styles:
+      - Background:=$FlyoutBackground
+      - BorderThickness=0
+  - target: WindowsInternal.ComposableShell.Experiences.TextInput.Common.InputSwitcher > ContentControl > ContentPresenter > Grid > Grid
+    styles:
+      - Background=Transparent
+
+clickThroughTaskbar: false

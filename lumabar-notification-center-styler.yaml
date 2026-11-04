@@ -1,0 +1,504 @@
+# =====================================================================
+#  LUMABAR-STYLE PANELS  -  theme pour le mod Windhawk
+#  "Windows 11 Notification Center Styler"
+#
+#  Installation : Windhawk > Windows 11 Notification Center Styler
+#                 > onglet Settings > "Textual mode"
+#                 > coller TOUT ce fichier > Save settings
+#
+#  Rendu : parametres rapides, centre de notifications, calendrier,
+#  controles multimedia, toasts, jump lists, menus et infobulles
+#  transformes en panneaux de verre flottants (meme matiere que le dock
+#  lumabar-taskbar-styler.yaml). Chaque groupe de controles (tuiles
+#  d'actions rapides, cartes de notification, calendrier, minuteur
+#  Concentration, en-tete...) est dans sa propre "tuile" arrondie, les
+#  etats actifs (tuile cochee, curseurs, jour d'aujourd'hui) sont en bleu
+#  accent, facon lumabar / Seelen UI.
+#
+#  Mode sombre ET mode clair : toutes les couleurs passent par les
+#  ressources Luma* definies dans themeResourceVariables.
+#  Echelle d'affichage 125 % : toutes les valeurs sont en DIP, aucune
+#  conversion a faire.
+#
+#  Hors perimetre de CE mod (a styler ailleurs) :
+#   - l'OSD volume / luminosite ("Confirmator", Grid#ConfirmatorMainGrid)
+#     est rendu par Explorer : il se style dans "Windows 11 Taskbar Styler"
+#     (voir lumabar-taskbar-styler.yaml) ;
+#   - le volet Phone Link / Lien mobile (Grid#RightCompanionContainerGrid)
+#     fait partie du menu Demarrer : il se style dans
+#     "Windows 11 Start Menu Styler".
+#
+#  Les lignes commencant par "//" sont des options desactivees :
+#  retirez les "//" pour les activer.
+# =====================================================================
+theme: ""
+
+styleConstants:
+  # ----- Couleur d'accent (definie en premier : d'autres constantes l'utilisent) -----
+  - Accent=#0A84FF
+  # Texte / icones poses sur l'accent
+  - OnAccent=#FFFFFF
+  # ----- Panneaux (parametres rapides, centre de notifications, calendrier, media) -----
+  - PanelBackground=<WindhawkBlur BlurAmount="30" TintColor="{ThemeResource LumaDockTint}" TintOpacity="0.72" FallbackColor="{ThemeResource LumaDockFallback}"/>
+  - PanelBorder=<SolidColorBrush Color="{ThemeResource LumaStroke}" Opacity="0.22"/>
+  - PanelRadius=20
+  # ----- Tuiles (cartes dans un panneau) -----
+  - TileBackground=<SolidColorBrush Color="{ThemeResource LumaTile}" Opacity="0.10"/>
+  - TileBorder=<SolidColorBrush Color="{ThemeResource LumaStroke}" Opacity="0.14"/>
+  - TileRadius=12
+  # ----- Etats -----
+  - HoverBackground=<SolidColorBrush Color="{ThemeResource LumaTile}" Opacity="0.20"/>
+  - PressedBackground=<SolidColorBrush Color="{ThemeResource LumaTile}" Opacity="0.08"/>
+  - ActiveBackground=<SolidColorBrush Color="{ThemeResource LumaTile}" Opacity="0.15"/>
+  # Tuile d'action rapide cochee (Wi-Fi actif, Bluetooth actif...)
+  - AccentChecked=<SolidColorBrush Color="$Accent" Opacity="0.85"/>
+  - AccentCheckedHover=<SolidColorBrush Color="$Accent" Opacity="1"/>
+  - AccentCheckedPressed=<SolidColorBrush Color="$Accent" Opacity="0.70"/>
+  # ----- Petits elements -----
+  # Arrondi des petits boutons (Effacer tout, Ne pas deranger, jours du calendrier, boutons media)
+  - ChipRadius=8
+  # Arrondi des menus contextuels, toasts et jump lists (meme valeur que le dock)
+  - FlyoutRadius=16
+  # Curseurs volume / luminosite : piste, epaisseur, arrondi
+  - SliderTrack=<SolidColorBrush Color="{ThemeResource LumaTile}" Opacity="0.18"/>
+  - SliderHeight=6
+  - SliderRadius=3
+
+themeResourceVariables:
+  # Couleurs qui suivent le mode sombre / clair de Windows (memes noms que le dock)
+  - LumaDockTint@Dark=#0B0B0F
+  - LumaDockTint@Light=#F2F2F6
+  - LumaDockFallback@Dark=#15151A
+  - LumaDockFallback@Light=#E9E9EE
+  - LumaTile@Dark=#FFFFFF
+  - LumaTile@Light=#000000
+  - LumaStroke@Dark=#FFFFFF
+  - LumaStroke@Light=#000000
+  # Calendrier : jour d'aujourd'hui en accent, survol / selection sobres.
+  # Ces cles remplacent des ressources existantes de Windows ("Cle=Valeur") ;
+  # si une cle n'existe pas sur votre build, elle est simplement ignoree.
+  - CalendarViewTodayBackground=$Accent
+  - CalendarViewTodayHoverBackground=#FF3D9BFF
+  - CalendarViewTodayPressedBackground=#D90A84FF
+  - CalendarViewTodayForeground=$OnAccent
+  - CalendarViewSelectedBorderBrush=$Accent
+  - CalendarViewSelectedHoverBorderBrush=$Accent
+  - CalendarViewSelectedPressedBorderBrush=#D90A84FF
+  - CalendarViewTodaySelectedInnerBorderBrush=$OnAccent
+  - CalendarViewCalendarItemHoverBackground=#30808080
+  - CalendarViewCalendarItemPressedBackground=#20808080
+  - CalendarViewHoverBorderBrush=#30808080
+  - CalendarViewPressedBorderBrush=#20808080
+
+controlStyles:
+  # ===================== 1. Parametres rapides : panneau de verre =====================
+  - target: Grid#ControlCenterRegion
+    styles:
+      - Background:=$PanelBackground
+      - BorderBrush:=$PanelBorder
+      - BorderThickness=1
+      - CornerRadius=$PanelRadius
+      # Retirez les "//" pour supprimer l'ombre portee du panneau
+      - //Shadow:=
+  # Couche de fond derriere les tuiles et les curseurs : on laisse voir le verre
+  - target: Grid#L1Grid > Border
+    styles:
+      - Background=Transparent
+      - BorderThickness=0
+  # Pas de trait de separation entre les tuiles et les curseurs
+  - target: ContentControl#TogglesGroup > ContentPresenter > ControlCenter.PaginatedGridView > Grid
+    styles:
+      - BorderThickness=0
+  # Points de navigation (pages de tuiles) : retirez les "//" pour les masquer
+  - target: Microsoft.UI.Xaml.Controls.PipsPager#QuickActionsPager
+    styles:
+      - //Visibility=Collapsed
+  # Option : afficher plus de rangees de tuiles sans pagination (activez les 3 lignes)
+  - target: ControlCenter.PaginatedGridView > Grid > GridView#RootGridView
+    styles:
+      - //Height=280
+  - target: ControlCenter.PaginatedGridView > Grid > GridView#RootGridView > Border > ScrollViewer
+    styles:
+      - //ScrollViewer.VerticalScrollBarVisibility=0
+
+  # ===================== 2. Tuiles d'actions rapides (Wi-Fi, Bluetooth...) =====================
+  # Le bouton lui-meme : transparent, c'est son ContentPresenter qui porte la tuile
+  - target: QuickActions.AccessibleToggleButton#ToggleButton, ControlCenter.PaginatedToggleButton#ToggleButton
+    styles:
+      - CornerRadius=$TileRadius
+      - BorderThickness=1
+      - BorderBrush:=$TileBorder
+      - BackgroundSizing=InnerBorderEdge
+      - Background:=Transparent
+  # Fleche des tuiles Wi-Fi / Bluetooth (ouvre la liste)
+  - target: QuickActions.AccessibleToggleButton#SplitL2Button, ControlCenter.PaginatedToggleButton#SplitL2Button, Button#SplitL2Button
+    styles:
+      - CornerRadius=$TileRadius
+      - Margin=4,0,-4,0
+      - BorderThickness=1
+      - BorderBrush:=$TileBorder
+      - BackgroundSizing=InnerBorderEdge
+      - Background:=Transparent
+  # Etats de la tuile : normal = tuile, survol, appui, cochee = accent
+  - target: ControlCenter.PaginatedToggleButton > ContentPresenter#ContentPresenter@CommonStates, ControlCenter.PaginatedToggleButton > ContentPresenter@CommonStates, QuickActions.AccessibleToggleButton > ContentPresenter#ContentPresenter@CommonStates, QuickActions.AccessibleToggleButton > ContentPresenter@CommonStates, Button#SplitL2Button > ContentPresenter#ContentPresenter@CommonStates, Button#SplitL2Button > ContentPresenter@CommonStates
+    styles:
+      - CornerRadius=$TileRadius
+      - BorderThickness=1
+      - BorderBrush:=$TileBorder
+      - BackgroundSizing=InnerBorderEdge
+      - Background@Normal:=$TileBackground
+      - Background@PointerOver:=$HoverBackground
+      - Background@Pressed:=$PressedBackground
+      - Background@Disabled:=$TileBackground
+      - Background@Checked:=$AccentChecked
+      - Background@CheckedPointerOver:=$AccentCheckedHover
+      - Background@CheckedPressed:=$AccentCheckedPressed
+      - Background@CheckedDisabled:=$ActiveBackground
+      - Foreground@Checked=$OnAccent
+      - Foreground@CheckedPointerOver=$OnAccent
+      - Foreground@CheckedPressed=$OnAccent
+  # Arrondi du ContentPresenter (sans groupe d'etats, pour les builds qui n'exposent pas CommonStates)
+  - target: QuickActions.AccessibleToggleButton#ToggleButton > ContentPresenter, ControlCenter.PaginatedToggleButton#ToggleButton > ContentPresenter, QuickActions.AccessibleToggleButton#SplitL2Button > ContentPresenter, ControlCenter.PaginatedToggleButton#SplitL2Button > ContentPresenter, Button#SplitL2Button > ContentPresenter
+    styles:
+      - CornerRadius=$TileRadius
+      - BorderThickness=1
+      - BorderBrush:=$TileBorder
+      - BackgroundSizing=InnerBorderEdge
+
+  # ===================== 3. Curseurs volume / luminosite =====================
+  # Piste
+  - target: Windows.UI.Xaml.Shapes.Rectangle#HorizontalTrackRect
+    styles:
+      - Height=$SliderHeight
+      - RadiusX=$SliderRadius
+      - RadiusY=$SliderRadius
+      - Fill:=$SliderTrack
+  # Partie remplie : accent
+  - target: Windows.UI.Xaml.Shapes.Rectangle#HorizontalDecreaseRect
+    styles:
+      - Height=$SliderHeight
+      - RadiusX=$SliderRadius
+      - RadiusY=$SliderRadius
+      - Margin=0
+      - Fill=$Accent
+  # Poignee : disque avec point accent au centre
+  - target: Windows.UI.Xaml.Controls.Primitives.Thumb#HorizontalThumb > Windows.UI.Xaml.Controls.Border
+    styles:
+      - CornerRadius=10
+      - BorderBrush:=$TileBorder
+      - BorderThickness=1
+  - target: Windows.UI.Xaml.Controls.Primitives.Thumb#HorizontalThumb > Windows.UI.Xaml.Controls.Border > Windows.UI.Xaml.Shapes.Ellipse#SliderInnerThumb
+    styles:
+      - Fill=$Accent
+  # Bouton "sortie audio" a droite du volume et bouton Batterie
+  - target: Button#VolumeL2Button, Button[AutomationProperties.AutomationId=Microsoft.QuickAction.Volume]
+    styles:
+      - CornerRadius=$ChipRadius
+  # Option : hauteur variable du mixeur de volume (page ouverte depuis le volume)
+  - target: ControlCenter.FrameWithContentChanged#L2Frame, QuickActions.ControlCenter.FrameWithContentChanged#L2Frame
+    styles:
+      - //Height=Auto
+
+  # ===================== 4. Pied de page (batterie, modifier, tous les parametres) =====================
+  # Sans trait de separation ; retirez les "//" de Visibility pour masquer tout le pied de page
+  - target: Grid#FooterGrid
+    styles:
+      - BorderThickness=0
+      - Background=Transparent
+      - //Visibility=Collapsed
+  # Boutons "Modifier les parametres rapides" et "Tous les parametres"
+  # (Button#FooterButton couvre les deux, quelle que soit la langue de Windows)
+  - target: Button#FooterButton
+    styles:
+      - CornerRadius=$ChipRadius
+      - BorderThickness=1
+      - BorderBrush:=$TileBorder
+  - target: Button[AutomationProperties.AutomationId=Microsoft.QuickAction.Battery]
+    styles:
+      - CornerRadius=$ChipRadius
+      - BorderThickness=1
+      - BorderBrush:=$TileBorder
+
+  # ===================== 5. Pages secondaires (liste Wi-Fi, Bluetooth, mixeur...) =====================
+  # La page s'affiche dans le panneau : on laisse voir le verre
+  - target: QuickActions.ControlCenter.AccessibleWindow#PageWindow > ContentPresenter > Grid#FullScreenPageRoot
+    styles:
+      - Background=Transparent
+  - target: ContentPresenter#PageContent
+    styles:
+      - Background=Transparent
+  # En-tete de page (bouton retour + titre) en tuile
+  - target: QuickActions.ControlCenter.AccessibleWindow#PageWindow > ContentPresenter > Grid#FullScreenPageRoot > ContentPresenter#PageHeader
+    styles:
+      - Background:=$TileBackground
+      - BorderBrush:=$TileBorder
+      - BorderThickness=1
+      - CornerRadius=$TileRadius
+      - Margin=7,7,7,7
+  # Contenu de la page en tuile
+  - target: ContentPresenter#PageContent > Grid > Border
+    styles:
+      - Background:=$TileBackground
+      - BorderBrush:=$TileBorder
+      - BorderThickness=1
+      - CornerRadius=$TileRadius
+      - Margin=8,0,8,2
+  - target: ScrollViewer#ListContent
+    styles:
+      - Background=Transparent
+      - CornerRadius=$TileRadius
+      - Margin=8,0,8,0
+  - target: Button#BackButton
+    styles:
+      - CornerRadius=$ChipRadius
+  # Lignes de la liste des reseaux
+  - target: NetworkUX.View.SettingsListViewItem > Windows.UI.Xaml.Controls.Primitives.ListViewItemPresenter#Root
+    styles:
+      - CornerRadius=$ChipRadius
+
+  # ===================== 6. Carte des controles multimedia =====================
+  # Panneau flottant au-dessus des parametres rapides, meme verre
+  - target: Grid#MediaTransportControlsRegion
+    styles:
+      - Background:=$PanelBackground
+      - BorderBrush:=$PanelBorder
+      - BorderThickness=1
+      - CornerRadius=$PanelRadius
+      - //Shadow:=
+  - target: Grid#MediaTransportControlsRoot
+    styles:
+      - Background=Transparent
+  # Pochette arrondie
+  - target: Grid#ThumbnailImage
+    styles:
+      - CornerRadius=$ChipRadius
+  - target: Grid#ThumbnailImage > Border
+    styles:
+      - CornerRadius=$ChipRadius
+  # Boutons precedent / lecture / suivant en petites tuiles
+  - target: Windows.UI.Xaml.Controls.Primitives.RepeatButton#PreviousButton > Windows.UI.Xaml.Controls.ContentPresenter#ContentPresenter@CommonStates, Windows.UI.Xaml.Controls.Primitives.RepeatButton#NextButton > Windows.UI.Xaml.Controls.ContentPresenter#ContentPresenter@CommonStates
+    styles:
+      - Background@Normal:=$TileBackground
+      - Background@PointerOver:=$HoverBackground
+      - Background@Pressed:=$PressedBackground
+      - BorderThickness=1
+      - BorderBrush:=$TileBorder
+      - Width=36
+      - Height=28
+      - CornerRadius=$ChipRadius
+      - Margin=4,0,4,0
+  - target: Windows.UI.Xaml.Controls.Button#PlayPauseButton > Windows.UI.Xaml.Controls.ContentPresenter#ContentPresenter@CommonStates
+    styles:
+      - Background@Normal:=$TileBackground
+      - Background@PointerOver:=$HoverBackground
+      - Background@Pressed:=$PressedBackground
+      - BorderThickness=1
+      - BorderBrush:=$TileBorder
+      - Width=36
+      - Height=36
+      - CornerRadius=$ChipRadius
+      - Margin=4,0,4,0
+  # Retirez les "//" pour masquer completement la section multimedia
+  - target: ControlCenter.MediaTransportControls#MediaTransportControls
+    styles:
+      - //Visibility=Collapsed
+
+  # ===================== 7. Centre de notifications =====================
+  # Panneau de verre, ajuste a son contenu (VerticalAlignment=2 = colle en bas ;
+  # retirez cette ligne pour retrouver le panneau pleine hauteur)
+  - target: Grid#NotificationCenterGrid
+    styles:
+      - Background:=$PanelBackground
+      - BorderBrush:=$PanelBorder
+      - BorderThickness=1
+      - CornerRadius=$PanelRadius
+      - VerticalAlignment=2
+      - //Shadow:=
+  # En-tete (titre, Ne pas deranger, Effacer tout) en tuile
+  - target: Grid#NotificationCenterTopBanner
+    styles:
+      - Background:=$TileBackground
+      - BorderBrush:=$TileBorder
+      - BorderThickness=1
+      - CornerRadius=$TileRadius
+      - Margin=6
+  # Bouton "Effacer tout" (Alt+X)
+  - target: Button#ClearAll
+    styles:
+      - CornerRadius=$ChipRadius
+      - BorderThickness=1
+      - BorderBrush:=$TileBorder
+      - AccessKey=x
+  # Bouton "Ne pas deranger" (Alt+D)
+  - target: Windows.UI.Xaml.Controls.Primitives.ToggleButton#DoNotDisturbButton
+    styles:
+      - CornerRadius=$ChipRadius
+      - BorderThickness=1
+      - BorderBrush:=$TileBorder
+      - AccessKey=d
+  # Message "Ne pas deranger est active" en tuile
+  - target: Grid#DoNotDisturbSubtext
+    styles:
+      - Background:=$TileBackground
+      - BorderBrush:=$TileBorder
+      - BorderThickness=1
+      - CornerRadius=$TileRadius
+      - Margin=6,0,6,6
+  # Chaque notification = une carte
+  - target: ActionCenter.FlexibleItemView
+    styles:
+      - CornerRadius=$TileRadius
+  - target: Border#ItemOpaquePlating
+    styles:
+      - Background:=$TileBackground
+      - BorderBrush:=$TileBorder
+      - BorderThickness=1
+      - CornerRadius=$TileRadius
+  # Espace entre les cartes
+  - target: ActionCenter.NotificationListViewItem
+    styles:
+      - Margin=5,2,5,3
+  # En-tete de groupe (nom de l'application)
+  - target: Windows.UI.Xaml.Controls.ListViewHeaderItem
+    styles:
+      - CornerRadius=$TileRadius
+  # Boutons fermer / parametres d'une notification
+  - target: Button#DismissButton, Button#SettingsButton
+    styles:
+      - CornerRadius=$ChipRadius
+  # Barre de defilement masquee (la molette fonctionne toujours)
+  - target: Windows.UI.Xaml.Controls.Primitives.ScrollBar#VerticalScrollBar
+    styles:
+      - Visibility=Collapsed
+
+  # ===================== 8. Calendrier =====================
+  # Panneau de verre, petit espace avec le centre de notifications
+  - target: Grid#CalendarCenterGrid
+    styles:
+      - Background:=$PanelBackground
+      - BorderBrush:=$PanelBorder
+      - BorderThickness=1
+      - CornerRadius=$PanelRadius
+      - Margin=0,6,0,6
+      - MinHeight=40
+      - //Shadow:=
+  # Date en haut du panneau
+  - target: StackPanel#CalendarHeader
+    styles:
+      - Margin=6,0,0,0
+  # Ligne de la date quand le calendrier est replie : tuile
+  - target: Border#CalendarHeaderMinimizedOverlay
+    styles:
+      - Background:=$TileBackground
+      - BorderBrush:=$TileBorder
+      - BorderThickness=1
+      - CornerRadius=$TileRadius
+      - Margin=-10,-6,-10,-8
+      - Height=45
+  # Bouton replier / deplier (Alt+E)
+  - target: Button#ExpandCollapseButton
+    styles:
+      - CornerRadius=$ChipRadius
+      - BorderThickness=1
+      - BorderBrush:=$TileBorder
+      - AccessKey=e
+  # Corps du calendrier : tuile
+  - target: ScrollViewer#CalendarControlScrollViewer
+    styles:
+      - Background:=$TileBackground
+      - BorderBrush:=$TileBorder
+      - BorderThickness=1
+      - CornerRadius=$TileRadius
+      - Margin=-10,11,-10,-14
+  # Titre du mois et fleches precedent / suivant
+  - target: Button#HeaderButton, Button#PreviousButton, Button#NextButton
+    styles:
+      - CornerRadius=$ChipRadius
+  # Ligne des noms de jours : petite tuile
+  - target: Grid#WeekDayNames
+    styles:
+      - Background:=$TileBackground
+      - CornerRadius=$ChipRadius
+      - Margin=4,0,4,0
+      - Padding=0,-5,0,-3
+  # Jours : survol arrondi (aujourd'hui en accent via themeResourceVariables)
+  - target: CalendarViewDayItem
+    styles:
+      - CornerRadius=$ChipRadius
+  - target: CalendarViewDayItem > Border
+    styles:
+      - CornerRadius=$ChipRadius
+      - Margin=1,2,1,2
+  # Vues annee / decennie (mois et annees)
+  - target: Windows.UI.Xaml.Controls.Primitives.CalendarPanel#YearViewPanel > Control, Windows.UI.Xaml.Controls.Primitives.CalendarPanel#DecadeViewPanel > Control, Windows.UI.Xaml.Controls.Primitives.CalendarViewItem
+    styles:
+      - CornerRadius=$ChipRadius
+  - target: Windows.UI.Xaml.Controls.Primitives.CalendarPanel#YearViewPanel > Control > Border, Windows.UI.Xaml.Controls.Primitives.CalendarPanel#DecadeViewPanel > Control > Border
+    styles:
+      - CornerRadius=$ChipRadius
+  # Section Concentration (minuteur) : tuile
+  - target: ActionCenter.FocusSessionControl#FocusSessionControl > Grid#FocusGrid
+    styles:
+      - Background:=$TileBackground
+      - BorderBrush:=$TileBorder
+      - BorderThickness=1
+      - CornerRadius=$TileRadius
+      - Margin=6,7,6,6
+  - target: Button#StartButton, Button#IncreaseTimeButton, Button#DecreaseTimeButton
+    styles:
+      - CornerRadius=$ChipRadius
+  # Retirez les "//" pour masquer la section Concentration
+  - target: ActionCenter.FocusSessionControl
+    styles:
+      - //Height=0
+
+  # ===================== 9. Toasts (notifications qui surgissent) =====================
+  - target: ActionCenter.FlexibleToastView#FlexibleNormalToastView
+    styles:
+      - Background=Transparent
+  - target: Border#ToastBackgroundBorder, Border#ToastBackgroundBorder2
+    styles:
+      - Background:=$PanelBackground
+      - BorderBrush:=$PanelBorder
+      - BorderThickness=1
+      - CornerRadius=$FlyoutRadius
+      - //Shadow:=
+
+  # ===================== 10. Jump lists (clic droit sur une appli du dock) =====================
+  - target: Border#JumpListRestyledAcrylic
+    styles:
+      - Background:=$PanelBackground
+      - BorderBrush:=$PanelBorder
+      - BorderThickness=1
+      - CornerRadius=$FlyoutRadius
+      - Margin=-2,-2,-2,-2
+      - //Shadow:=
+  # Survol / appui des elements
+  - target: JumpViewUI.JumpListListViewItem > Grid#LayoutRoot@CommonStates > Border#BackgroundBorder, JumpViewUI.SystemItemListViewItem > Grid#LayoutRoot@CommonStates > Border#BackgroundBorder
+    styles:
+      - CornerRadius=$ChipRadius
+      - Margin=4,0,4,0
+      - Background@PointerOver:=$HoverBackground
+      - Background@Pressed:=$PressedBackground
+
+  # ===================== 11. Menus contextuels et infobulles, meme verre =====================
+  - target: MenuFlyoutPresenter
+    styles:
+      - CornerRadius=$FlyoutRadius
+      - //Shadow:=
+  - target: MenuFlyoutPresenter > Border
+    styles:
+      - Background:=$PanelBackground
+      - BorderBrush:=$PanelBorder
+      - BorderThickness=1
+      - CornerRadius=$FlyoutRadius
+      - Padding=4,6,4,6
+  - target: MenuFlyoutItem > Grid#LayoutRoot
+    styles:
+      - CornerRadius=6
+  - target: ToolTip > ContentPresenter#LayoutRoot
+    styles:
+      - Background:=$PanelBackground
+      - BorderBrush:=$PanelBorder
+      - BorderThickness=1
+      - CornerRadius=10

@@ -1,0 +1,458 @@
+# =====================================================================
+#  LUMABAR-STYLE START MENU  -  theme pour le mod Windhawk
+#  "Windows 11 Start Menu Styler" (menu Demarrer redessine 24H2 / 25H2)
+#
+#  Installation : Windhawk > Windows 11 Start Menu Styler > onglet Settings
+#                 > "Textual mode" > coller TOUT ce fichier > Save settings
+#
+#  Rendu : menu Demarrer en panneau de verre flottant (meme matiere que le
+#  dock lumabar-taskbar-styler.yaml), recherche en pilule, chaque groupe
+#  (epinglees, recommandations, barre du bas) dans une "carte" arrondie
+#  facon widget, chaque bouton / application dans une tuile au survol,
+#  panneau Mobile connecte (Phone Link) conserve et habille du meme verre,
+#  menus contextuels, infobulles, dossiers et dialogues assortis.
+#
+#  Notes :
+#   - Toutes les longueurs sont en DIP : un ecran a 125 % n'a besoin
+#     d'AUCUNE conversion, Windows applique l'echelle lui-meme.
+#   - Mode sombre ET mode clair : toutes les couleurs passent par les
+#     ressources Luma* definies dans themeResourceVariables.
+#   - Le bouton Demarrer appartient a la barre des taches : il se regle
+#     dans lumabar-taskbar-styler.yaml, pas ici.
+#   - Ordre des regles : le mod applique la DERNIERE regle qui touche une
+#     propriete d'un element. Les regles generales sont donc en tete de
+#     section 0 et les tuiles precises viennent apres.
+# =====================================================================
+theme: ""
+
+styleConstants:
+  # ----- Geometrie (DIP) -----
+  # Arrondi du grand panneau (menu, panneau Mobile connecte, menu Recherche)
+  - PanelRadius=20
+  # Arrondi des tuiles (boutons, applications au survol)
+  - TileRadius=12
+  # Arrondi des cartes "widget" (grille epinglee, recommandations, barre du bas)
+  - CardRadius=16
+  # Arrondi des volets : menus contextuels, dossiers, dialogues
+  - FlyoutRadius=16
+  # Arrondi de la zone de recherche (pilule)
+  - SearchPillRadius=20
+  # ----- Matieres et couleurs (memes noms que le theme barre des taches) -----
+  - PanelBackground=<WindhawkBlur BlurAmount="30" TintColor="{ThemeResource LumaDockTint}" TintOpacity="0.72" FallbackColor="{ThemeResource LumaDockFallback}"/>
+  - PanelBorder=<SolidColorBrush Color="{ThemeResource LumaStroke}" Opacity="0.22"/>
+  - TileBackground=<SolidColorBrush Color="{ThemeResource LumaTile}" Opacity="0.10"/>
+  - TileBorder=<SolidColorBrush Color="{ThemeResource LumaStroke}" Opacity="0.14"/>
+  - HoverBackground=<SolidColorBrush Color="{ThemeResource LumaTile}" Opacity="0.20"/>
+  - PressedBackground=<SolidColorBrush Color="{ThemeResource LumaTile}" Opacity="0.08"/>
+  - ActiveBackground=<SolidColorBrush Color="{ThemeResource LumaTile}" Opacity="0.15"/>
+  - Accent=#0A84FF
+  # Cartes "widget" : plus discretes que les tuiles pour ne pas empiler les voiles
+  - CardBackground=<SolidColorBrush Color="{ThemeResource LumaTile}" Opacity="0.05"/>
+  - CardBorder=<SolidColorBrush Color="{ThemeResource LumaStroke}" Opacity="0.10"/>
+  # Transition douce des fonds au survol
+  - FadeTransition=<BrushTransition Duration="0:0:0.083" />
+
+themeResourceVariables:
+  # Couleurs qui suivent le mode sombre / clair de Windows
+  - LumaDockTint@Dark=#0B0B0F
+  - LumaDockTint@Light=#F2F2F6
+  - LumaDockFallback@Dark=#15151A
+  - LumaDockFallback@Light=#E9E9EE
+  - LumaTile@Dark=#FFFFFF
+  - LumaTile@Light=#000000
+  - LumaStroke@Dark=#FFFFFF
+  - LumaStroke@Light=#000000
+
+controlStyles:
+  # ===================== 0. Regles generales (survol arrondi partout) =====================
+  # Fond de tous les boutons du menu : arrondi + transition. Les regles plus
+  # precises des sections suivantes prennent le dessus quand elles existent.
+  - target: Border#BackgroundBorder
+    styles:
+      - CornerRadius=$TileRadius
+      - BackgroundTransition:=$FadeTransition
+  # Tout bouton "maison" du menu Demarrer (Tout / Retour, Plus, barre d'actions...)
+  - target: Button > Grid@CommonStates > Border#BackgroundBorder
+    styles:
+      - CornerRadius=$TileRadius
+      - BorderThickness=1
+      - BackgroundSizing=InnerBorderEdge
+      - Background@PointerOver:=$HoverBackground
+      - Background@Pressed:=$PressedBackground
+      - BorderBrush@PointerOver:=$TileBorder
+      - BorderBrush@Pressed:=$TileBorder
+
+  # ===================== 1. Panneau principal : verre, bord, arrondi, ombres =====================
+  # Fond du menu Demarrer (et du panneau Mobile connecte, qui porte le meme nom)
+  - target: Border#AcrylicBorder
+    styles:
+      - Background:=$PanelBackground
+      - BorderBrush:=$PanelBorder
+      - BorderThickness=1
+      - CornerRadius=$PanelRadius
+  # Voile de teinte Windows par-dessus le fond : masque pour laisser voir notre verre
+  - target: Border#AcrylicOverlay
+    styles:
+      - Visibility=Collapsed
+  # Ombres portees de Windows : on les garde mais on aligne leur arrondi sur le
+  # panneau. Retirez les "//" pour les supprimer completement (rendu plus plat).
+  - target: Border#StartDropShadow, Border#RootGridDropShadow, Border#DropShadow, Border#RightCompanionDropShadow
+    styles:
+      - CornerRadius=$PanelRadius
+      - //Visibility=Collapsed
+
+  # ===================== 2. Recherche (pilule) et bouton Mobile connecte =====================
+  # Zone de recherche du menu Demarrer : tuile en forme de pilule
+  # (StartDocked.* = disposition classique, pour les builds qui l'ont encore)
+  - target: StartMenu.SearchBoxToggleButton > Grid@CommonStates > Border#BorderElement, StartDocked.SearchBoxToggleButton > Grid@CommonStates > Border#BorderElement
+    styles:
+      - Background:=$TileBackground
+      - BorderBrush:=$TileBorder
+      - BorderThickness=1
+      - CornerRadius=$SearchPillRadius
+      - BackgroundSizing=InnerBorderEdge
+      - BackgroundTransition:=$FadeTransition
+      - Background@PointerOver:=$HoverBackground
+      - Background@Pressed:=$PressedBackground
+      - Background@Checked:=$ActiveBackground
+      - Background@CheckedPointerOver:=$HoverBackground
+      - Background@CheckedPressed:=$PressedBackground
+  # Trait de soulignement sous la zone de recherche : inutile sur une pilule
+  - target: Border#BorderUnderline
+    styles:
+      - Visibility=Collapsed
+  # Bouton qui affiche / masque le panneau Mobile connecte (a droite de la recherche) :
+  # petite tuile carree, bord accent quand le panneau est ouvert
+  - target: Windows.UI.Xaml.Controls.Primitives.ToggleButton#ShowHideCompanion > Border@CommonStates > ContentPresenter#ContentPresenter
+    styles:
+      - Background:=$TileBackground
+      - BorderBrush:=$TileBorder
+      - BorderThickness=1
+      - CornerRadius=$TileRadius
+      - BackgroundSizing=InnerBorderEdge
+      - BackgroundTransition:=$FadeTransition
+      - Background@PointerOver:=$HoverBackground
+      - Background@Pressed:=$PressedBackground
+      - Background@Checked:=$ActiveBackground
+      - Background@CheckedPointerOver:=$HoverBackground
+      - Background@CheckedPressed:=$PressedBackground
+      - BorderBrush@Checked:=<SolidColorBrush Color="$Accent" Opacity="0.7"/>
+      - BorderBrush@CheckedPointerOver:=<SolidColorBrush Color="$Accent" Opacity="0.7"/>
+      - BorderBrush@CheckedPressed:=<SolidColorBrush Color="$Accent" Opacity="0.5"/>
+  # Le bouton reste visible (ne pas mettre Collapsed) ; retirez les "//" pour le masquer
+  - target: Windows.UI.Xaml.Controls.Primitives.ToggleButton#ShowHideCompanion
+    styles:
+      - //Visibility=Collapsed
+
+  # ===================== 3. Applications epinglees =====================
+  # Carte "widget" autour de la grille des epinglees
+  - target: StartMenu.PinnedList#StartMenuPinnedList > Grid#Root > GridView#PinnedList > Border
+    styles:
+      - Background:=$CardBackground
+      - BorderBrush:=$CardBorder
+      - BorderThickness=1
+      - CornerRadius=$CardRadius
+  # Chaque application (epinglees, recommandations, grille "Toutes les applications") :
+  # transparente au repos, tuile au survol, enfoncee au clic
+  - target: Border#ContentBorder@CommonStates > Grid > Border#BackgroundBorder
+    styles:
+      - CornerRadius=$TileRadius
+      - BorderThickness=1
+      - BackgroundSizing=InnerBorderEdge
+      - BackgroundTransition:=$FadeTransition
+      - Background@Normal=Transparent
+      - BorderBrush@Normal=Transparent
+      - Background@PointerOver:=$HoverBackground
+      - BorderBrush@PointerOver:=$TileBorder
+      - Background@Pressed:=$PressedBackground
+      - BorderBrush@Pressed:=$TileBorder
+  # Dossiers epingles : plaque arrondie en tuile
+  - target: Border#FolderPlate
+    styles:
+      - Background:=$TileBackground
+      - BorderBrush:=$TileBorder
+      - BorderThickness=1
+      - CornerRadius=$TileRadius
+  - target: Button#FolderPlate > Grid@CommonStates > Border
+    styles:
+      - CornerRadius=$TileRadius
+      - Background@PointerOver:=$HoverBackground
+      - Background@Pressed:=$PressedBackground
+  # Indicateur de pages (points sous la grille) : conserve ; retirez les "//" pour le masquer
+  - target: Microsoft.UI.Xaml.Controls.PipsPager#PinnedListPipsPager
+    styles:
+      - //Visibility=Collapsed
+
+  # ===================== 4. Boutons "Tout" / "Retour" / "Plus" en tuiles =====================
+  # "Tout >" et "< Retour" (en-tete de la section epinglee, nouvelle disposition),
+  # "Plus" des recommandations (nouvelle disposition : SeeAllButton),
+  # "Afficher plus / moins" (disposition classique)
+  - target: Grid#ShowMorePinnedGrid > Button > Grid@CommonStates > Border#BackgroundBorder, Button#SeeAllButton > Grid@CommonStates > Border#BackgroundBorder, Button#ShowMoreSuggestionsButton > Grid@CommonStates > Border#BackgroundBorder, Button#HideMoreSuggestionsButton > Grid@CommonStates > Border#BackgroundBorder
+    styles:
+      - Background:=$TileBackground
+      - BorderBrush:=$TileBorder
+      - BorderThickness=1
+      - CornerRadius=$TileRadius
+      - BackgroundSizing=InnerBorderEdge
+      - BackgroundTransition:=$FadeTransition
+      - Background@PointerOver:=$HoverBackground
+      - Background@Pressed:=$PressedBackground
+  # "Toutes les applications" / "Retour" de la disposition classique
+  - target: Button#ShowAllAppsButton > ContentPresenter#ContentPresenter@CommonStates, Button#CloseAllAppsButton > ContentPresenter#ContentPresenter@CommonStates
+    styles:
+      - Background:=$TileBackground
+      - BorderBrush:=$TileBorder
+      - BorderThickness=1
+      - CornerRadius=$TileRadius
+      - BackgroundTransition:=$FadeTransition
+      - Background@PointerOver:=$HoverBackground
+      - Background@Pressed:=$PressedBackground
+
+  # ===================== 5. Section Recommandations =====================
+  # Carte "widget" autour de la liste des recommandations (le titre et le bouton
+  # "Plus" restent au-dessus, comme pour la grille epinglee). Les elements eux-memes
+  # recoivent la tuile de survol de la section 3.
+  - target: Grid#TopLevelSuggestionsContainer
+    styles:
+      - Background:=$CardBackground
+      - BorderBrush:=$CardBorder
+      - BorderThickness=1
+      - CornerRadius=$CardRadius
+  # Pour supprimer la section : retirez les "//" (ou desactivez-la dans Parametres > Demarrer)
+  - target: Grid#TopLevelSuggestionsRoot
+    styles:
+      - //Visibility=Collapsed
+
+  # ===================== 6. Liste "Toutes les applications" =====================
+  # Vue liste (et navigation alphabetique) : survol arrondi
+  - target: ListViewItem > Grid@CommonStates > Border#BorderBackground
+    styles:
+      - CornerRadius=$TileRadius
+      - BorderThickness=1
+      - BackgroundSizing=InnerBorderEdge
+      - BackgroundTransition:=$FadeTransition
+      - Background@PointerOver:=$HoverBackground
+      - Background@Pressed:=$PressedBackground
+      - BorderBrush@PointerOver:=$TileBorder
+      - BorderBrush@Pressed:=$TileBorder
+  # Vue categories : chaque categorie est une carte
+  - target: StartMenu.CategoryControl > Grid#RootGrid > Border
+    styles:
+      - Background:=$TileBackground
+      - BorderBrush:=$TileBorder
+      - BorderThickness=1
+      - CornerRadius=$CardRadius
+  # Icones a l'interieur d'une categorie : survol arrondi plus petit
+  - target: Button#LogoContainer > Grid@CommonStates > Border
+    styles:
+      - CornerRadius=8
+      - Background@PointerOver:=$HoverBackground
+      - Background@Pressed:=$PressedBackground
+  # En-tetes alphabetiques (A, B, C...) : petites pilules cliquables
+  - target: GridViewHeaderItem > Border > ContentPresenter#ContentPresenter > Button#Header > Border#Border
+    styles:
+      - CornerRadius=$TileRadius
+  - target: Button#Header > Border#Border@CommonStates
+    styles:
+      - Background@PointerOver:=$HoverBackground
+      - Background@Pressed:=$PressedBackground
+  # Selecteur de vue (Liste / Grille / Categories) : tuile
+  - target: Microsoft.UI.Xaml.Controls.DropDownButton#ViewSelectionButton > Grid@CommonStates
+    styles:
+      - Background:=$TileBackground
+      - BorderBrush:=$TileBorder
+      - BorderThickness=1
+      - CornerRadius=$TileRadius
+      - BackgroundSizing=InnerBorderEdge
+      - BackgroundTransition:=$FadeTransition
+      - Background@PointerOver:=$HoverBackground
+      - Background@Pressed:=$PressedBackground
+  # Barres de defilement : retirez les "//" pour les masquer (defilement a la molette conserve)
+  - target: Windows.UI.Xaml.Controls.Primitives.ScrollBar
+    styles:
+      - //Visibility=Collapsed
+
+  # ===================== 7. Barre du bas : compte, dossiers, alimentation =====================
+  # La barre devient une pilule flottante (facon dock) dans le bas du panneau
+  - target: Grid#NavPanePlaceholder
+    styles:
+      - Background:=$CardBackground
+      - BorderBrush:=$CardBorder
+      - BorderThickness=1
+      - CornerRadius=$CardRadius
+      - Margin=14,4,14,12
+      - Padding=6,0,6,0
+  # Bouton compte (a gauche) et bouton alimentation (a droite) : tuiles
+  - target: StartDocked.NavigationPaneButton > Grid@CommonStates > Border#BackgroundBorder
+    styles:
+      - Background:=$TileBackground
+      - BorderBrush:=$TileBorder
+      - BorderThickness=1
+      - CornerRadius=$TileRadius
+      - BackgroundSizing=InnerBorderEdge
+      - BackgroundTransition:=$FadeTransition
+      - Background@PointerOver:=$HoverBackground
+      - Background@Pressed:=$PressedBackground
+  # Dossiers (Parametres, Explorateur...) ajoutes via Personnalisation > Demarrer > Dossiers
+  - target: StartDocked.AppListViewItem > Grid@CommonStates > Border#BackgroundBorder
+    styles:
+      - CornerRadius=$TileRadius
+      - BackgroundTransition:=$FadeTransition
+      - Background@PointerOver:=$HoverBackground
+      - Background@Pressed:=$PressedBackground
+
+  # ===================== 8. Panneau Mobile connecte (Phone Link) =====================
+  # Le panneau de droite : exactement le meme verre que le menu
+  - target: StartMenu.StartMenuCompanion#RightCompanion > Grid#CompanionRoot > Border#AcrylicBorder
+    styles:
+      - Background:=$PanelBackground
+      - BorderBrush:=$PanelBorder
+      - BorderThickness=1
+      - CornerRadius=$PanelRadius
+  # Voiles de teinte du panneau (deux emplacements selon la build) : masques
+  - target: Grid#CompanionRoot > Border#AcrylicOverlay, Grid#CompanionRoot > Grid#MainContent > Border#AcrylicOverlay
+    styles:
+      - Visibility=Collapsed
+  # Le panneau reste affiche. Retirez les "//" UNIQUEMENT pour le masquer.
+  - target: Grid#RightCompanionContainerGrid
+    styles:
+      - //Visibility=Collapsed
+  # Carte principale (telephone, batterie) : tuile "widget"
+  - target: StartMenu.StartMenuCompanion#RightCompanion > Grid#CompanionRoot > Grid#MainContent > ContentPresenter#PrimaryCardContainer
+    styles:
+      - Background:=$CardBackground
+      - BorderBrush:=$CardBorder
+      - BorderThickness=1
+      - CornerRadius=$CardRadius
+      - Margin=8,8,8,4
+      - Padding=4
+  # Contenu "activite recente" (cartes adaptatives : appels, messages, photos) : carte "widget"
+  - target: Grid#CompanionRoot > Grid#MainContent > Grid#AdaptiveCardContent
+    styles:
+      - Background:=$CardBackground
+      - BorderBrush:=$CardBorder
+      - BorderThickness=1
+      - CornerRadius=$CardRadius
+      - Margin=8,0,8,8
+      - Padding=2
+  # Cadres de widgets et lecteur multimedia du panneau : tuiles
+  - target: Grid#WidgetFrameGrid, Grid#MediaTransportControls
+    styles:
+      - Background:=$TileBackground
+      - BorderBrush:=$TileBorder
+      - BorderThickness=1
+      - CornerRadius=$TileRadius
+  # Barre d'actions du panneau (appels, messages, photos, "...") : boutons en tuiles
+  - target: Grid#ActionsBar > Button > ContentPresenter#ContentPresenter@CommonStates
+    styles:
+      - Background:=$TileBackground
+      - BorderBrush:=$TileBorder
+      - BorderThickness=1
+      - CornerRadius=$TileRadius
+      - BackgroundTransition:=$FadeTransition
+      - Background@PointerOver:=$HoverBackground
+      - Background@Pressed:=$PressedBackground
+
+  # ===================== 9. Dossiers, menus contextuels, infobulles, volets, dialogues =====================
+  # Dossier ouvert depuis la grille epinglee : meme verre, arrondi de volet
+  - target: StartMenu.ExpandedFolderList > Grid > Border, StartMenu.FolderModal > Grid > Border
+    styles:
+      - Background:=$PanelBackground
+      - BorderBrush:=$PanelBorder
+      - BorderThickness=1
+      - CornerRadius=$FlyoutRadius
+  # Champ de renommage du dossier : tuile
+  - target: TextBox#MutableFolderNameTextBox > Grid@CommonStates > Border#BorderElement, TextBox#ExpandedFolderNameTextBox > Grid@CommonStates > Border#BorderElement
+    styles:
+      - Background:=$TileBackground
+      - BorderBrush:=$TileBorder
+      - BorderThickness=1
+      - CornerRadius=$TileRadius
+      - Background@PointerOver:=$HoverBackground
+      - Background@Focused:=$ActiveBackground
+  # Menu contextuel (clic droit sur une application, menu du bouton alimentation)
+  - target: MenuFlyoutPresenter
+    styles:
+      - CornerRadius=$FlyoutRadius
+  - target: MenuFlyoutPresenter > Border
+    styles:
+      - Background:=$PanelBackground
+      - BorderBrush:=$PanelBorder
+      - BorderThickness=1
+      - CornerRadius=$FlyoutRadius
+      - Padding=4,6,4,6
+  - target: MenuFlyoutItem
+    styles:
+      - CornerRadius=8
+      - Margin=2,1,2,1
+  # Infobulles
+  - target: ToolTip > ContentPresenter#LayoutRoot
+    styles:
+      - Background:=$PanelBackground
+      - BorderBrush:=$PanelBorder
+      - BorderThickness=1
+      - CornerRadius=10
+  # Volets (menu du compte utilisateur, confirmation de desinstallation)
+  - target: FlyoutPresenter
+    styles:
+      - CornerRadius=$FlyoutRadius
+      - BorderThickness=0
+      - Background=Transparent
+  - target: FlyoutPresenter > Border
+    styles:
+      - Background:=$PanelBackground
+      - BorderBrush:=$PanelBorder
+      - BorderThickness=1
+      - CornerRadius=$FlyoutRadius
+  # Le volet du compte a son propre fond : on le rend transparent pour voir le verre
+  - target: AccountControl.View.AccountControlFlyout, AccountControl.View.AccountControlFlyout > Grid, AccountControl.View.UserProfileView, AccountControl.View.UserProfileView > Grid
+    styles:
+      - Background=Transparent
+  # Boites de dialogue (ex. desinstaller une application)
+  - target: Windows.UI.Xaml.Controls.ContentDialog
+    styles:
+      - Background:=$PanelBackground
+      - BorderBrush:=$PanelBorder
+      - BorderThickness=1
+      - CornerRadius=$FlyoutRadius
+  - target: Grid#CommandSpace, Grid#DialogSpace, ScrollViewer#ContentScrollViewer, ScrollViewer#ContentScrollViewer > Border
+    styles:
+      - Background=Transparent
+
+  # ===================== 10. Menu Recherche (SearchHost, ouvert depuis la pilule) =====================
+  # Fond du menu Recherche (avec ou sans couleur d'accentuation activee dans Windows)
+  - target: Border#AppBorder, Border#AccentAppBorder
+    styles:
+      - Background:=$PanelBackground
+      - BorderBrush:=$PanelBorder
+      - BorderThickness=1
+      - CornerRadius=$PanelRadius
+  - target: Border#LayerBorder, Border#AccentLayerBorder
+    styles:
+      - Visibility=Collapsed
+  - target: Border#dropshadow
+    styles:
+      - CornerRadius=$PanelRadius
+  # Zone de saisie du menu Recherche : pilule assortie
+  - target: Grid@SearchBoxInputStates > Border#TaskbarSearchBackground
+    styles:
+      - Background:=$TileBackground
+      - BorderBrush:=$TileBorder
+      - BorderThickness=1
+      - CornerRadius=$SearchPillRadius
+      - BackgroundTransition:=$FadeTransition
+      - Background@SearchBoxHover:=$HoverBackground
+      - Background@ActiveInput:=$ActiveBackground
+      - Background@NoFocus:=$TileBackground
+
+# Contenu web des resultats de recherche : arrondi des resultats assorti aux tuiles
+webContentStyles:
+  - target: .suggContainer, .suggestion:not(.groupHeader)
+    styles:
+      - border-radius: 12px !important
+
+# Disposition du menu : "" = celle par defaut du theme (nouvelle disposition Windows),
+# forceNewLayout = forcer la nouvelle disposition, newLayoutSideBySide = epinglees et
+# "Toutes les applications" cote a cote (ecrans larges). Les styles ci-dessus
+# fonctionnent dans les deux arrangements.
+disableNewStartMenuLayout: ""
