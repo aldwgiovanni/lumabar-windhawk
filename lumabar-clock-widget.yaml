@@ -11,7 +11,7 @@
 #    stats systeme : '%weekday% %date%  ·  CPU %cpu%  RAM %ram%'
 #    meteo         : '%weekday% %date%  ·  %weather%'  (renseigner WebContentWeatherLocation)
 # =====================================================================
-ShowSeconds: false
+ShowSeconds: 0
 TimeFormat: HH':'mm
 DateFormat: d MMM
 DateLocale: ""
@@ -41,7 +41,7 @@ MediaPlayer:
   MaxLength: 30
   MediaInfoFormat: '  ·  %media_status% %media_title%'
   NoMediaText: ''
-  RemoveBrackets: true
+  RemoveBrackets: 1
 WebContentWeatherLocation: ''
 WebContentWeatherFormat: '%c %t'
 WebContentWeatherUnits: autoDetect
@@ -59,7 +59,7 @@ WebContentsUpdateInterval: 10
 TimeZones:
   - ''
 TimeStyle:
-  Hidden: false
+  Hidden: 0
   TextColor: ''
   TextAlignment: ''
   FontSize: 0
@@ -70,7 +70,7 @@ TimeStyle:
   CharacterSpacing: 0
   LineHeight: 0
 DateStyle:
-  Hidden: false
+  Hidden: 0
   TextColor: ''
   TextAlignment: ''
   FontSize: 0
@@ -80,4 +80,4 @@ DateStyle:
   FontStretch: ''
   CharacterSpacing: 0
   LineHeight: 0
-oldTaskbarOnWin11: false
+oldTaskbarOnWin11: 0
