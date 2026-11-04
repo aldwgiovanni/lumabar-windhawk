@@ -12,21 +12,23 @@
 theme: ""
 
 styleConstants:
-  # ----- Geometrie (px) -----
+  # NOTE : le mod remplace $Nom par le PREMIER constant dont le nom est un PREFIXE du texte qui suit le '$'.
+  # Ne jamais ajouter un constant dont le nom est le debut d'un autre (ex. "Tile" ou "Dock" seuls).
+  # ----- Geometrie (DIP : Windows applique lui-meme l'echelle 125 % ; multiples de 4 = pixels entiers a 125 %) -----
   # Hauteur totale de la zone barre des taches (dock + espace sous le dock)
-  - DockHeight=58
+  - DockHeight=56
   # Espace entre le dock et les bords de l'ecran
   - DockGapBottom=8
   - DockGapTop=0
   - DockGapSide=8
   # Arrondis du dock et des tuiles
-  - DockRadius=18
-  - TileRadius=11
+  - DockRadius=16
+  - TileRadius=12
   # Marge verticale des tuiles dans le dock / espace horizontal entre tuiles
-  - TileInset=5
-  - TileGap=3
-  # Position du point "appli ouverte" (distance depuis le bas du bouton)
-  - DotOffset=7
+  - TileInset=4
+  - TileGap=4
+  # Remontee du point "appli ouverte" depuis sa place native (la barre reecrit la Margin, on utilise une transformation)
+  - DotOffset=6
   # ----- Matieres et couleurs (variante "Glass" par defaut) -----
   - DockBackground=<WindhawkBlur BlurAmount="22" TintColor="{ThemeResource LumaDockTint}" TintOpacity="0.5" FallbackColor="{ThemeResource LumaDockFallback}"/>
   - DockBorder=<SolidColorBrush Color="{ThemeResource LumaStroke}" Opacity="0.22"/>
@@ -54,9 +56,18 @@ themeResourceVariables:
 
 controlStyles:
   # ===================== 1. Barre : hauteur et dock flottant =====================
+  # Orientation : le thème ne s'applique qu'à une barre horizontale (bas ou haut)
+  - target: Taskbar.TaskbarFrame > Grid#RootGrid@DockingStates
+    styles:
+      - Tag=horizontal
+      - Tag@DockedLeft=vertical
+      - Tag@DockedRight=vertical
+      - Tag=>taskbarDock
+  # Windows fixe aussi MaxHeight sur le cadre : sans MaxHeight, Height est ignoree (bloquee a 48)
   - target: Taskbar.TaskbarFrame
     styles:
-      - Height=$DockHeight
+      - Height={{taskbarDock==`vertical`?skip():$DockHeight}}
+      - MaxHeight={{taskbarDock==`vertical`?skip():$DockHeight}}
   - target: Taskbar.TaskbarFrame > Grid#RootGrid
     styles:
       - Margin=0,$DockGapTop,0,$DockGapBottom
@@ -72,7 +83,8 @@ controlStyles:
       - RadiusY=$DockRadius
       - Stroke:=$DockBorder
       - StrokeThickness=1
-  - target: Rectangle#BackgroundStroke
+  # Trait natif de 1 px (barre ET miniatures) : remplace par le contour des tuiles/volets
+  - target: Taskbar.TaskbarFrame > Grid#RootGrid > Taskbar.TaskbarBackground > Grid > Rectangle#BackgroundStroke, Taskbar.TaskbarBackground#HoverFlyoutBackgroundControl > Grid > Rectangle#BackgroundStroke
     styles:
       - Visibility=Collapsed
 
@@ -108,15 +120,15 @@ controlStyles:
     styles:
       - //Visibility=Collapsed
 
-  # ===================== 3. Recherche (si elle est affichee) =====================
-  - target: SearchUx.SearchUI.SearchButtonRootGrid#SearchBoxButtonRootPanel
+  # ===================== 3. Recherche (icone, pastille ou zone de texte, si affichee) =====================
+  - target: SearchUx.SearchUI.SearchButtonRootGrid
     styles:
       - Background:=$TileBackground
       - BorderBrush:=$TileBorder
       - BorderThickness=1
       - CornerRadius=$TileRadius
       - Margin=$TileGap,$TileInset,$TileGap,$TileInset
-  - target: SearchUx.SearchUI.SearchButtonRootGrid#SearchBoxButtonRootPanel@CommonStates > Grid > Border#BackgroundElement, SearchUx.SearchUI.SearchButtonRootGrid#SearchBoxButtonRootPanel@CommonStates > Border#BackgroundElement
+  - target: SearchUx.SearchUI.SearchButtonRootGrid@CommonStates > Grid > Border#BackgroundElement, SearchUx.SearchUI.SearchButtonRootGrid@CommonStates > Border#BackgroundElement
     styles:
       - CornerRadius=$TileRadius
       - Margin=0
@@ -145,16 +157,28 @@ controlStyles:
       - Background@ActivePointerOver:=$HoverBackground
       - Background@InactivePressed:=$PressedBackground
       - Background@ActivePressed:=$PressedBackground
+      # Etats "plusieurs fenetres" et "demande d'attention" : sans ces lignes, pas de survol sur ces boutons
+      - Background@MultiWindowNormal:=$AppTileBackground
+      - Background@MultiWindowActive:=$ActiveBackground
+      - Background@MultiWindowPointerOver:=$HoverBackground
+      - Background@MultiWindowPressed:=$PressedBackground
+      - Background@RequestingAttention:=$AppTileBackground
+      - Background@RequestingAttentionPointerOver:=$HoverBackground
+      - Background@RequestingAttentionPressed:=$PressedBackground
       - BorderBrush@InactiveNormal:=$AppTileBorder
       - BorderBrush@ActiveNormal:=$TileBorder
       - BorderBrush@InactivePointerOver:=$TileBorder
       - BorderBrush@ActivePointerOver:=$TileBorder
       - BorderBrush@InactivePressed:=$AppTileBorder
       - BorderBrush@ActivePressed:=$AppTileBorder
-  # Icone legerement remontee pour laisser la place au point
+      - BorderBrush@MultiWindowNormal:=$AppTileBorder
+      - BorderBrush@MultiWindowActive:=$TileBorder
+      - BorderBrush@MultiWindowPointerOver:=$TileBorder
+      - BorderBrush@MultiWindowPressed:=$AppTileBorder
+  # Icone legerement remontee pour laisser la place au point (transformation : ne touche pas aux marges natives)
   - target: Grid#IconPanel > Image#Icon, Taskbar.TaskListLabeledButtonPanel#IconPanel > Image#Icon
     styles:
-      - Margin=0,0,0,4
+      - RenderTransform:=<TranslateTransform Y="-2" />
   # Point bleu "appli ouverte" ; l'appli active a un point allonge
   - target: Grid#IconPanel@RunningIndicatorStates > Rectangle#RunningIndicator, Taskbar.TaskListLabeledButtonPanel@RunningIndicatorStates > Rectangle#RunningIndicator
     styles:
@@ -163,7 +187,7 @@ controlStyles:
       - Height=5
       - RadiusX=2.5
       - RadiusY=2.5
-      - Margin=0,0,0,$DotOffset
+      - RenderTransform:=<TranslateTransform Y="-$DotOffset" />
       - Width@ActiveRunningIndicator=14
       - Fill@ActiveRunningIndicator=$Accent
       - Fill@RequestingAttentionRunningIndicator=#FF9F0A
@@ -178,6 +202,11 @@ controlStyles:
       - Margin=2,0,8,0
 
   # ===================== 5. Zone systeme : chaque groupe = une tuile =====================
+  # Le cadre de la zone systeme est dimensionne a part par Windows : on l'aligne sur le dock
+  - target: SystemTray.SystemTrayFrame
+    styles:
+      - Height={{taskbarDock==`vertical`?skip():$DockHeight}}
+      - VerticalAlignment=Top
   - target: StackPanel#SystemTrayFrameGrid, Grid#SystemTrayFrameGrid
     styles:
       - Height={{$DockHeight-$DockGapTop-$DockGapBottom}}
@@ -185,8 +214,20 @@ controlStyles:
       - Margin=0,$DockGapTop,{{$DockGapSide+4}},0
       - Background=Transparent
       - Padding=0
-  # Chevron "icones masquees", icones de notification, langue, micro/localisation
-  - target: SystemTray.Stack#NotifyIconStack > Grid#Content, SystemTray.NotificationAreaIcons#NotificationAreaIcons > ItemsPresenter > StackPanel, SystemTray.Stack#MainStack > Grid#Content, SystemTray.Stack#NonActivatableStack > Grid#Content
+  # Chevron "icones masquees", micro/localisation, langue : la tuile n'apparait que si le groupe contient une icone
+  - target: SystemTray.Stack#NotifyIconStack > Grid#Content > SystemTray.StackListView#IconStack > ItemsPresenter > StackPanel, SystemTray.Stack#MainStack > Grid#Content > SystemTray.StackListView#IconStack > ItemsPresenter > StackPanel, SystemTray.Stack#NonActivatableStack > Grid#Content > SystemTray.StackListView#IconStack > ItemsPresenter > StackPanel
+    styles:
+      - ActualWidth=>LumaStackW
+  - target: SystemTray.Stack#NotifyIconStack > Grid#Content, SystemTray.Stack#MainStack > Grid#Content, SystemTray.Stack#NonActivatableStack > Grid#Content
+    styles:
+      - Background:=$TileBackground
+      - BorderBrush:=$TileBorder
+      - CornerRadius=$TileRadius
+      - BorderThickness={{LumaStackW>0?1:0}}
+      - Margin={{LumaStackW>0?`$TileGap,$TileInset,$TileGap,$TileInset`:`0`}}
+      - Padding={{LumaStackW>0?`2,0,2,0`:`0`}}
+  # Icones de la zone de notification epinglees sur la barre
+  - target: SystemTray.NotificationAreaIcons#NotificationAreaIcons > ItemsPresenter > StackPanel
     styles:
       - Background:=$TileBackground
       - BorderBrush:=$TileBorder
@@ -284,6 +325,16 @@ controlStyles:
       - BorderBrush:=$DockBorder
       - BorderThickness=1
       - CornerRadius=$FlyoutRadius
+  # OSD volume / luminosite (touches multimedia)
+  - target: Grid#ConfirmatorMainGrid
+    styles:
+      - Background:=$FlyoutBackground
+      - BorderBrush:=$DockBorder
+      - BorderThickness=1
+      - CornerRadius=$FlyoutRadius
+  - target: Rectangle#HorizontalDecreaseRect
+    styles:
+      - Fill=$Accent
   # Selecteur de langue
   - target: WindowsInternal.ComposableShell.Experiences.TextInput.Common.InputSwitcher > ContentControl > ContentPresenter > Grid
     styles:

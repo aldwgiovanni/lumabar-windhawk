@@ -19,9 +19,13 @@
 #     ressources Luma* definies dans themeResourceVariables.
 #   - Le bouton Demarrer appartient a la barre des taches : il se regle
 #     dans lumabar-taskbar-styler.yaml, pas ici.
-#   - Ordre des regles : le mod applique la DERNIERE regle qui touche une
-#     propriete d'un element. Les regles generales sont donc en tete de
-#     section 0 et les tuiles precises viennent apres.
+#   - Ordre des regles : pour un element donne, le mod ne garde pour chaque
+#     PROPRIETE que la DERNIERE regle qui la mentionne, etats visuels compris.
+#     Une regle tardive qui ne definit que Background@PointerOver efface aussi
+#     le Background de base d'une regle precedente : redefinissez toujours la
+#     propriete complete (base + etats) dans la regle la plus precise. Les
+#     regles generales sont donc en tete de section 0 et les tuiles precises
+#     viennent apres.
 # =====================================================================
 theme: ""
 
@@ -96,15 +100,17 @@ controlStyles:
       - Visibility=Collapsed
   # Ombres portees de Windows : on les garde mais on aligne leur arrondi sur le
   # panneau. Retirez les "//" pour les supprimer completement (rendu plus plat).
-  - target: Border#StartDropShadow, Border#RootGridDropShadow, Border#DropShadow, Border#RightCompanionDropShadow
+  # (Border#RightCompanionDropShadowDismissTarget est la zone invisible jumelee a
+  #  l'ombre du panneau Mobile connecte : on la masque en meme temps que les ombres.)
+  - target: Border#StartDropShadow, Border#RootGridDropShadow, Border#DropShadow, Border#RightCompanionDropShadow, Border#RightCompanionDropShadowDismissTarget
     styles:
       - CornerRadius=$PanelRadius
       - //Visibility=Collapsed
 
   # ===================== 2. Recherche (pilule) et bouton Mobile connecte =====================
   # Zone de recherche du menu Demarrer : tuile en forme de pilule
-  # (StartDocked.* = disposition classique, pour les builds qui l'ont encore)
-  - target: StartMenu.SearchBoxToggleButton > Grid@CommonStates > Border#BorderElement, StartDocked.SearchBoxToggleButton > Grid@CommonStates > Border#BorderElement
+  # (StartDocked.SearchBoxToggleButton = disposition classique, supprimee en 26100.8524 : non cible)
+  - target: StartMenu.SearchBoxToggleButton > Grid@CommonStates > Border#BorderElement
     styles:
       - Background:=$TileBackground
       - BorderBrush:=$TileBorder
@@ -122,7 +128,15 @@ controlStyles:
     styles:
       - Visibility=Collapsed
   # Bouton qui affiche / masque le panneau Mobile connecte (a droite de la recherche) :
-  # petite tuile carree, bord accent quand le panneau est ouvert
+  # petite tuile carree, bord accent quand le panneau est ouvert.
+  # Le Border racine du modele porte le fond / bord / arrondi par defaut de Windows :
+  # on le neutralise pour que seule notre tuile (ContentPresenter ci-dessous) soit visible
+  - target: Windows.UI.Xaml.Controls.Primitives.ToggleButton#ShowHideCompanion > Border
+    styles:
+      - Background=Transparent
+      - BorderBrush=Transparent
+      - BorderThickness=0
+      - CornerRadius=$TileRadius
   - target: Windows.UI.Xaml.Controls.Primitives.ToggleButton#ShowHideCompanion > Border@CommonStates > ContentPresenter#ContentPresenter
     styles:
       - Background:=$TileBackground
@@ -197,7 +211,9 @@ controlStyles:
       - BackgroundTransition:=$FadeTransition
       - Background@PointerOver:=$HoverBackground
       - Background@Pressed:=$PressedBackground
-  # "Toutes les applications" / "Retour" de la disposition classique
+  # "Toutes les applications" / "Retour" : disposition classique uniquement (supprimee en 26100.8524),
+  # conserve pour les builds qui l'ont encore ; dans la nouvelle disposition c'est
+  # DropDownButton#ViewSelectionButton (section 6) qui joue ce role
   - target: Button#ShowAllAppsButton > ContentPresenter#ContentPresenter@CommonStates, Button#CloseAllAppsButton > ContentPresenter#ContentPresenter@CommonStates
     styles:
       - Background:=$TileBackground
@@ -211,12 +227,19 @@ controlStyles:
   # ===================== 5. Section Recommandations =====================
   # Carte "widget" autour de la liste des recommandations (le titre et le bouton
   # "Plus" restent au-dessus, comme pour la grille epinglee). Les elements eux-memes
-  # recoivent la tuile de survol de la section 3.
-  - target: Grid#TopLevelSuggestionsContainer
+  # recoivent la tuile de survol de la section 3. Dans la nouvelle disposition,
+  # Windows dessine son propre fond dans Border#TopLevelSuggestionsBackground : on habille
+  # ce bord (il recouvre la grille) et on garde la grille pour les anciennes builds.
+  - target: Grid#TopLevelSuggestionsContainer > Border#TopLevelSuggestionsBackground
     styles:
       - Background:=$CardBackground
       - BorderBrush:=$CardBorder
       - BorderThickness=1
+      - CornerRadius=$CardRadius
+  - target: Grid#TopLevelSuggestionsContainer
+    styles:
+      - Background=Transparent
+      - BorderThickness=0
       - CornerRadius=$CardRadius
   # Pour supprimer la section : retirez les "//" (ou desactivez-la dans Parametres > Demarrer)
   - target: Grid#TopLevelSuggestionsRoot
@@ -326,7 +349,9 @@ controlStyles:
       - CornerRadius=$CardRadius
       - Margin=8,8,8,4
       - Padding=4
-  # Contenu "activite recente" (cartes adaptatives : appels, messages, photos) : carte "widget"
+  # Contenu "activite recente" (cartes adaptatives : appels, messages, photos) : carte "widget".
+  # Grid#AdaptiveCardContent n'existe que dans la disposition classique ; la nouvelle
+  # disposition passe par le rendu AdaptiveCards (WholeItemsPanel > Grid > Border).
   - target: Grid#CompanionRoot > Grid#MainContent > Grid#AdaptiveCardContent
     styles:
       - Background:=$CardBackground
@@ -335,6 +360,12 @@ controlStyles:
       - CornerRadius=$CardRadius
       - Margin=8,0,8,8
       - Padding=2
+  - target: AdaptiveCards.Rendering.Uwp.WholeItemsPanel > Grid > Border
+    styles:
+      - Background:=$CardBackground
+      - BorderBrush:=$CardBorder
+      - BorderThickness=1
+      - CornerRadius=$CardRadius
   # Cadres de widgets et lecteur multimedia du panneau : tuiles
   - target: Grid#WidgetFrameGrid, Grid#MediaTransportControls
     styles:
@@ -342,13 +373,17 @@ controlStyles:
       - BorderBrush:=$TileBorder
       - BorderThickness=1
       - CornerRadius=$TileRadius
-  # Barre d'actions du panneau (appels, messages, photos, "...") : boutons en tuiles
-  - target: Grid#ActionsBar > Button > ContentPresenter#ContentPresenter@CommonStates
+  # Barre d'actions du panneau (appels, messages, photos, "...") : boutons en tuiles.
+  # Sur les builds actuelles ces boutons (PrimaryActionBarButton, ActionBarOverflowButton)
+  # utilisent le modele Button > Grid > ContentPresenter du menu Demarrer ; la forme
+  # ContentPresenter#ContentPresenter est conservee pour les anciennes builds.
+  - target: Grid#ActionsBar > Button > Grid@CommonStates > Border#BackgroundBorder, Grid#ActionsBar > Button > ContentPresenter#ContentPresenter@CommonStates
     styles:
       - Background:=$TileBackground
       - BorderBrush:=$TileBorder
       - BorderThickness=1
       - CornerRadius=$TileRadius
+      - BackgroundSizing=InnerBorderEdge
       - BackgroundTransition:=$FadeTransition
       - Background@PointerOver:=$HoverBackground
       - Background@Pressed:=$PressedBackground
@@ -415,7 +450,7 @@ controlStyles:
       - BorderBrush:=$PanelBorder
       - BorderThickness=1
       - CornerRadius=$FlyoutRadius
-  - target: Grid#CommandSpace, Grid#DialogSpace, ScrollViewer#ContentScrollViewer, ScrollViewer#ContentScrollViewer > Border
+  - target: Grid#CommandSpace, Grid#DialogSpace, ScrollViewer#ContentScrollViewer, ScrollViewer#ContentScrollViewer > Border, ContentControl#Title, ContentPresenter#Content
     styles:
       - Background=Transparent
 

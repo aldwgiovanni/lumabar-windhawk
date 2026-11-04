@@ -122,12 +122,12 @@ controlStyles:
       - //ScrollViewer.VerticalScrollBarVisibility=0
 
   # ===================== 2. Tuiles d'actions rapides (Wi-Fi, Bluetooth...) =====================
-  # Le bouton lui-meme : transparent, c'est son ContentPresenter qui porte la tuile
+  # Le bouton lui-meme : transparent et sans bordure, c'est son ContentPresenter
+  # qui porte la tuile (un seul trait $TileBorder, pas deux superposes)
   - target: QuickActions.AccessibleToggleButton#ToggleButton, ControlCenter.PaginatedToggleButton#ToggleButton
     styles:
       - CornerRadius=$TileRadius
-      - BorderThickness=1
-      - BorderBrush:=$TileBorder
+      - BorderThickness=0
       - BackgroundSizing=InnerBorderEdge
       - Background:=Transparent
   # Fleche des tuiles Wi-Fi / Bluetooth (ouvre la liste)
@@ -135,12 +135,11 @@ controlStyles:
     styles:
       - CornerRadius=$TileRadius
       - Margin=4,0,-4,0
-      - BorderThickness=1
-      - BorderBrush:=$TileBorder
+      - BorderThickness=0
       - BackgroundSizing=InnerBorderEdge
       - Background:=Transparent
   # Etats de la tuile : normal = tuile, survol, appui, cochee = accent
-  - target: ControlCenter.PaginatedToggleButton > ContentPresenter#ContentPresenter@CommonStates, ControlCenter.PaginatedToggleButton > ContentPresenter@CommonStates, QuickActions.AccessibleToggleButton > ContentPresenter#ContentPresenter@CommonStates, QuickActions.AccessibleToggleButton > ContentPresenter@CommonStates, Button#SplitL2Button > ContentPresenter#ContentPresenter@CommonStates, Button#SplitL2Button > ContentPresenter@CommonStates
+  - target: ControlCenter.PaginatedToggleButton > ContentPresenter#ContentPresenter@CommonStates, ControlCenter.PaginatedToggleButton > ContentPresenter@CommonStates, QuickActions.AccessibleToggleButton > ContentPresenter#ContentPresenter@CommonStates, QuickActions.AccessibleToggleButton > ContentPresenter@CommonStates
     styles:
       - CornerRadius=$TileRadius
       - BorderThickness=1
@@ -157,6 +156,17 @@ controlStyles:
       - Foreground@Checked=$OnAccent
       - Foreground@CheckedPointerOver=$OnAccent
       - Foreground@CheckedPressed=$OnAccent
+  # Etats de la fleche (bouton simple : pas d'etat "coche")
+  - target: Button#SplitL2Button > ContentPresenter#ContentPresenter@CommonStates, Button#SplitL2Button > ContentPresenter@CommonStates
+    styles:
+      - CornerRadius=$TileRadius
+      - BorderThickness=1
+      - BorderBrush:=$TileBorder
+      - BackgroundSizing=InnerBorderEdge
+      - Background@Normal:=$TileBackground
+      - Background@PointerOver:=$HoverBackground
+      - Background@Pressed:=$PressedBackground
+      - Background@Disabled:=$TileBackground
   # Arrondi du ContentPresenter (sans groupe d'etats, pour les builds qui n'exposent pas CommonStates)
   - target: QuickActions.AccessibleToggleButton#ToggleButton > ContentPresenter, ControlCenter.PaginatedToggleButton#ToggleButton > ContentPresenter, QuickActions.AccessibleToggleButton#SplitL2Button > ContentPresenter, ControlCenter.PaginatedToggleButton#SplitL2Button > ContentPresenter, Button#SplitL2Button > ContentPresenter
     styles:
@@ -190,7 +200,7 @@ controlStyles:
   - target: Windows.UI.Xaml.Controls.Primitives.Thumb#HorizontalThumb > Windows.UI.Xaml.Controls.Border > Windows.UI.Xaml.Shapes.Ellipse#SliderInnerThumb
     styles:
       - Fill=$Accent
-  # Bouton "sortie audio" a droite du volume et bouton Batterie
+  # Boutons de la ligne volume : haut-parleur (muet) a gauche et "sortie audio" a droite du curseur
   - target: Button#VolumeL2Button, Button[AutomationProperties.AutomationId=Microsoft.QuickAction.Volume]
     styles:
       - CornerRadius=$ChipRadius
@@ -366,8 +376,9 @@ controlStyles:
   - target: Button#DismissButton, Button#SettingsButton
     styles:
       - CornerRadius=$ChipRadius
-  # Barre de defilement masquee (la molette fonctionne toujours)
-  - target: Windows.UI.Xaml.Controls.Primitives.ScrollBar#VerticalScrollBar
+  # Barre de defilement de la liste des notifications masquee (la molette fonctionne toujours).
+  # Retirez "Grid#NotificationCenterGrid > * > " pour masquer aussi celles des listes Wi-Fi / mixeur
+  - target: Grid#NotificationCenterGrid > * > Windows.UI.Xaml.Controls.Primitives.ScrollBar#VerticalScrollBar
     styles:
       - Visibility=Collapsed
 

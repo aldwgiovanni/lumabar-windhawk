@@ -1,0 +1,75 @@
+# =====================================================================
+#  Variante "Seelen UI toolbar" du theme lumabar-taskbar-styler.yaml
+#  Remplacer les blocs styleConstants et themeResourceVariables du theme
+#  par ceux ci-dessous (le reste du fichier, controlStyles, ne change pas),
+#  puis mettre la barre EN HAUT (mod "Taskbar on top for Windows 11",
+#  voir OPTIONS.md). Valeurs relevees dans le depot Seelen-UI v2.8.11
+#  (design flat : pas de flou, pas de bordure, accent Windows en survol).
+# =====================================================================
+styleConstants:
+  # ===== Variante "Seelen toolbar" : barre EN HAUT, fine, groupes en pilules (look Bubbles / preview.png) =====
+  # Toutes les valeurs sont en DIP : rien a convertir a 125 %.
+  # ----- Geometrie (px / DIP) -----
+  # Seelen : 16 px d'icone + 8 px de padding = 32 px. Les icones Windows font 24 px, 40 est le minimum
+  # realiste avec le point "appli ouverte". Pour 32 px exact : mod "Taskbar height and icon size" (32 / 16)
+  # et retirer la cible Taskbar.TaskbarFrame Height=$DockHeight (voir README).
+  - DockHeight=40
+  # Seelen a margin = 0 : barre collee aux bords, sans arrondi. (Variante margin 8 : DockGap* = 8 et DockRadius = 10,
+  # Seelen arrondit alors la barre a (16+16)*0.3 = 9.6 px.)
+  - DockGapTop=0
+  - DockGapBottom=0
+  - DockGapSide=0
+  - DockRadius=0
+  # Pilules Bubbles : radius 10 px (theme par defaut : 16*0.3 = 5)
+  - TileRadius=10
+  # Barre : padding vertical 4 px -> pilules de 32 px dans 40 ; 4 px entre modules (2 de chaque cote)
+  - TileInset=4
+  - TileGap=2
+  # Point "appli ouverte" du dock Seelen : 3 px, 4 px sous la tuile (dans la cible : Width=3 Height=3 RadiusX/Y=1.5,
+  # Width@ActiveRunningIndicator=16 soit ~50 % de la tuile, Fill@RequestingAttention = accent)
+  - DotOffset=3
+  # ----- Matieres (design flat : AUCUN flou, AUCUNE bordure) -----
+  # Bubbles : barre transparente, chaque module en pilule opaque a 95 %.
+  - DockBackground=<SolidColorBrush Color="Transparent"/>
+  # Theme Seelen par defaut (barre continue a 90 %, sans pilules) :
+  # - DockBackground=<WindhawkBlur BlurAmount="0" TintColor="{ThemeResource LumaDockTint}" TintOpacity="0.90" FallbackColor="{ThemeResource LumaDockFallback}"/>
+  # - TileBackground=<SolidColorBrush Color="Transparent"/>
+  # - AppTileBackground=<SolidColorBrush Color="Transparent"/>
+  - DockBorder=<SolidColorBrush Color="Transparent"/>
+  # Pilule = --slu-std-bg-color a 0.95 (#181818 sombre / #F2F2F2 clair)
+  - TileBackground=<SolidColorBrush Color="{ThemeResource LumaDockTint}" Opacity="0.95"/>
+  - TileBorder=<SolidColorBrush Color="Transparent"/>
+  # Applis : meme pilule (dock Seelen : tuile --slu-std-bg-light-color = #1F1F1F / #FCFCFC, mettre
+  # <SolidColorBrush Color="{ThemeResource LumaTile}" Opacity="1"/> pour ce rendu "tuile claire")
+  - AppTileBackground=<SolidColorBrush Color="{ThemeResource LumaDockTint}" Opacity="0.95"/>
+  - AppTileBorder=<SolidColorBrush Color="Transparent"/>
+  # ----- Etats : la signature Seelen = accent Windows en voile -----
+  # --slu-std-ui-hover-overlay = accent 20 %, pressed = 30 %, selected = 10 %
+  - HoverBackground=<SolidColorBrush Color="{ThemeResource SystemAccentColor}" Opacity="0.20"/>
+  - PressedBackground=<SolidColorBrush Color="{ThemeResource SystemAccentColor}" Opacity="0.30"/>
+  - ActiveBackground=<SolidColorBrush Color="{ThemeResource SystemAccentColor}" Opacity="0.10"/>
+  # Hover facon Bubbles (pilule qui s'eclaircit) a la place :
+  # - HoverBackground=<SolidColorBrush Color="{ThemeResource LumaTile}" Opacity="0.95"/>
+  # Accent : Seelen suit TOUJOURS l'accent Windows. Valeur fixe = accent Windows 11 par defaut ;
+  # pour le suivi automatique, remplacer dans la cible RunningIndicator Fill=$Accent par
+  # Fill:=<SolidColorBrush Color="{ThemeResource SeelenAccent}"/> (SeelenAccent defini ci-dessous)
+  - Accent=#0078D4
+  # ----- Menus, infobulles, miniatures : opaques, radius-m = 10, ombre douce, pas de flou -----
+  - FlyoutBackground=<SolidColorBrush Color="{ThemeResource LumaDockFallback}"/>
+  - FlyoutRadius=10
+
+themeResourceVariables:
+  # Palette Seelen (oklch gray-50 / gray-75 convertis en hex), suit le mode sombre / clair de Windows
+  - LumaDockTint@Dark=#181818
+  - LumaDockTint@Light=#F2F2F2
+  - LumaDockFallback@Dark=#181818
+  - LumaDockFallback@Light=#F2F2F2
+  # --slu-std-bg-light-color (tuiles du dock, hover Bubbles)
+  - LumaTile@Dark=#1F1F1F
+  - LumaTile@Light=#FCFCFC
+  # Bordures : inexistantes chez Seelen (gardees pour compatibilite, opacite 0 via Transparent ci-dessus)
+  - LumaStroke@Dark=#FFFFFF
+  - LumaStroke@Light=#000000
+  # --slu-std-ui-color = light-dark(accent-dark, accent-light)
+  - SeelenAccent@Dark={ThemeResource SystemAccentColorLight2}
+  - SeelenAccent@Light={ThemeResource SystemAccentColorDark1}

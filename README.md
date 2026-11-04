@@ -19,6 +19,10 @@ comme d'habitude (épinglage, miniatures, zone de notification, Win+touches, etc
 | --- | --- |
 | `lumabar-taskbar-styler.yaml` | Le thème, à importer dans le mod **Windows 11 Taskbar Styler** |
 | `lumabar-clock-widget.yaml` | Config optionnelle du mod **Taskbar Clock Customization** : heure en haut, jour + date + titre en lecture en bas, stats système dans l'infobulle |
+| `lumabar-start-menu-styler.yaml` | Thème du mod **Windows 11 Start Menu Styler** : menu Démarrer et panneau Phone Link (Mobile connecté) en verre, tuiles, recherche en pilule |
+| `lumabar-notification-center-styler.yaml` | Thème du mod **Windows 11 Notification Center Styler** : paramètres rapides, notifications, calendrier |
+| `OPTIONS.md` | Inventaire des mods Windhawk complémentaires (dock animé, barre en haut, fenêtres translucides, média, tray…) avec réglages, et étude Seelen UI |
+| `variantes/seelen-toolbar.yaml` | Constantes pour une variante « toolbar Seelen UI » (barre en haut, flat, accent Windows) |
 | `preview.png` | Maquette du rendu attendu (ce n'est pas une capture réelle) |
 
 ## Prérequis
@@ -100,6 +104,11 @@ BottomLine: '%weekday% %date%  ·  %weather%'
 
 Pour la météo, renseignez `WebContentWeatherLocation` (ville ou code postal).
 
+## Écran à 125 % (ou autre échelle)
+
+Rien à convertir : les valeurs des thèmes sont en DIP, Windows applique l'échelle. Les
+constantes par défaut sont des multiples de 4 DIP pour tomber sur des pixels entiers à 125 %.
+
 ## Dépannage
 
 - **Rien ne change** : redémarrez l'Explorateur (Gestionnaire des tâches > Explorateur
@@ -113,7 +122,7 @@ Pour la météo, renseignez `WebContentWeatherLocation` (ville ou code postal).
 - **Point bleu trop haut / trop bas, tuiles rognées** : ajustez `DotOffset`,
   `TileInset` et `DockHeight`. Les valeurs par défaut visent 100 % d'échelle ; à
   125 % ou 150 % montez `DockHeight` (64 à 72) et `DockGapBottom` (10).
-- **Barre verticale (gauche/droite)** : non prise en charge par ce thème.
+- **Barre verticale (gauche/droite)** : le thème se désactive de lui-même sur la hauteur (garde DockingStates), mais le rendu n'est pas prévu pour la verticale.
 - Pour inspecter les éléments et affiner un style : [UWPSpy](https://ramensoftware.com/uwpspy).
 
 ## Références
