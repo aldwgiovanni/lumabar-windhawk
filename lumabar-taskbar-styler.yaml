@@ -27,8 +27,6 @@ styleConstants:
   # Marge verticale des tuiles dans le dock / espace horizontal entre tuiles
   - TileInset=4
   - TileGap=4
-  # Remontee du point "appli ouverte" depuis sa place native (la barre reecrit la Margin, on utilise une transformation)
-  - DotOffset=6
   # ----- Matieres et couleurs (variante "Glass" par defaut) -----
   - DockBackground=<WindhawkBlur BlurAmount="22" TintColor="{ThemeResource LumaDockTint}" TintOpacity="0.5" FallbackColor="{ThemeResource LumaDockFallback}"/>
   - DockBorder=<SolidColorBrush Color="{ThemeResource LumaStroke}" Opacity="0.22"/>
@@ -187,7 +185,6 @@ controlStyles:
       - Height=5
       - RadiusX=2.5
       - RadiusY=2.5
-      - RenderTransform:=<TranslateTransform Y="-$DotOffset" />
       - Width@ActiveRunningIndicator=14
       - Fill@ActiveRunningIndicator=$Accent
       - Fill@RequestingAttentionRunningIndicator=#FF9F0A
@@ -344,4 +341,4 @@ controlStyles:
     styles:
       - Background=Transparent
 
-clickThroughTaskbar: false
+clickThroughTaskbar: 0

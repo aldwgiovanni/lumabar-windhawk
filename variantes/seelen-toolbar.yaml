@@ -25,9 +25,9 @@ styleConstants:
   # Barre : padding vertical 4 px -> pilules de 32 px dans 40 ; 4 px entre modules (2 de chaque cote)
   - TileInset=4
   - TileGap=2
-  # Point "appli ouverte" du dock Seelen : 3 px, 4 px sous la tuile (dans la cible : Width=3 Height=3 RadiusX/Y=1.5,
-  # Width@ActiveRunningIndicator=16 soit ~50 % de la tuile, Fill@RequestingAttention = accent)
-  - DotOffset=3
+  # Point "appli ouverte" du dock Seelen : 3 px (dans la cible : Width=3 Height=3 RadiusX/Y=1.5,
+  # Width@ActiveRunningIndicator=16 soit ~50 % de la tuile, Fill@RequestingAttention = accent).
+  # Ne pas le deplacer par RenderTransform : teste sur Windows 11 26H2, il disparait.
   # ----- Matieres (design flat : AUCUN flou, AUCUNE bordure) -----
   # Bubbles : barre transparente, chaque module en pilule opaque a 95 %.
   - DockBackground=<SolidColorBrush Color="Transparent"/>

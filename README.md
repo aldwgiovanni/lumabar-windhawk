@@ -65,7 +65,6 @@ texte, dans la section **Style constants** des réglages du mod).
 | `DockRadius` | 18 | Arrondi du dock |
 | `TileRadius` | 11 | Arrondi des tuiles |
 | `TileInset` / `TileGap` | 5 / 3 | Marge verticale des tuiles / espace entre tuiles |
-| `DotOffset` | 7 | Hauteur du point « appli ouverte » |
 | `DockBackground` | verre sombre 50 % | Matière du dock (`WindhawkBlur`) |
 | `TileBackground` / `TileBorder` | blanc 10 % / 14 % | Fond et bordure des tuiles système |
 | `AppTileBackground` / `AppTileBorder` | blanc 6 % / 10 % | Fond et bordure des tuiles d'applis (mettre `<SolidColorBrush Color="Transparent"/>` pour des icônes « nues ») |
@@ -119,7 +118,7 @@ constantes par défaut sont des multiples de 4 DIP pour tomber sur des pixels en
   aucune icône épinglée dans la zone de notification. Supprimez
   `SystemTray.NotificationAreaIcons#NotificationAreaIcons > ItemsPresenter > StackPanel`
   de la cible correspondante (section 5).
-- **Point bleu trop haut / trop bas, tuiles rognées** : ajustez `DotOffset`,
+- **Tuiles rognées** : ajustez
   `TileInset` et `DockHeight`. Les valeurs par défaut visent 100 % d'échelle ; à
   125 % ou 150 % montez `DockHeight` (64 à 72) et `DockGapBottom` (10).
 - **Barre verticale (gauche/droite)** : le thème se désactive de lui-même sur la hauteur (garde DockingStates), mais le rendu n'est pas prévu pour la verticale.
